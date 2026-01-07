@@ -98,10 +98,4 @@ jspm_packages/
 .storybook-out
 
 # Temporary folders
-tmp/
-temp/
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
+enlightenment-journal-source.tar.gz

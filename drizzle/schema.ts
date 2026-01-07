@@ -1,82 +1,67 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean } from "drizzle-orm/mysql-core";
+import { pgTable, serial, text, timestamp, boolean, uuid, pgEnum, integer, jsonb } from "drizzle-orm/pg-core";
 
-/**
- * Core user table backing auth flow.
- */
-export const users = mysqlTable("users", {
-  id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
+// Enums
+export const roleEnum = pgEnum("role", ["user", "admin"]);
+export const categoryEnum = pgEnum("category", ["gratitude", "philosophical"]);
+export const sageEnum = pgEnum("sage", ["confucius", "laozi", "buddha", "plato"]);
+
+// Users table (profiles)
+// Note: This table is intended to be linked with Supabase Auth (auth.users)
+export const users = pgTable("users", {
+  id: uuid("id").primaryKey(), // Matches auth.users.id
+  email: text("email"),
   name: text("name"),
-  email: varchar("email", { length: 320 }),
-  loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
+  role: roleEnum("role").default("user").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  lastSignedIn: timestamp("last_signed_in", { withTimezone: true }).defaultNow().notNull(),
 });
 
+// Journal Entries
+export const journalEntries = pgTable("journal_entries", {
+  id: serial("id").primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  promptId: integer("prompt_id"),
+  promptText: text("prompt_text"),
+  content: text("content").notNull(),
+  category: categoryEnum("category").notNull(),
+  isFreeWrite: boolean("is_free_write").default(false).notNull(),
+  // Store insights as JSONB for better querying capabilities in Postgres
+  sageInsights: jsonb("sage_insights"), 
+  isDraft: boolean("is_draft").default(true).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// Writing Prompts
+export const writingPrompts = pgTable("writing_prompts", {
+  id: serial("id").primaryKey(),
+  text: text("text").notNull(),
+  category: categoryEnum("category").notNull(),
+  sortOrder: integer("sort_order").default(0).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// Favorite Insights
+export const favoriteInsights = pgTable("favorite_insights", {
+  id: serial("id").primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  sage: sageEnum("sage").notNull(),
+  content: text("content").notNull(),
+  originalContent: text("original_content"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
-
-/**
- * Journal entries table - stores user's gratitude journal entries
- */
-export const journalEntries = mysqlTable("journal_entries", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  /** The prompt/topic used for this entry, null if free writing */
-  promptId: int("promptId"),
-  /** Journal content */
-  content: text("content").notNull(),
-  /** Category: gratitude or philosophical */
-  category: mysqlEnum("category", ["gratitude", "philosophical"]).notNull(),
-  /** Whether this is a free writing entry */
-  isFreeWrite: boolean("isFreeWrite").default(false).notNull(),
-  /** Sage insights received for this entry (JSON array) */
-  sageInsights: text("sageInsights"),
-  /** Draft status */
-  isDraft: boolean("isDraft").default(true).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
 
 export type JournalEntry = typeof journalEntries.$inferSelect;
 export type InsertJournalEntry = typeof journalEntries.$inferInsert;
 
-/**
- * Writing prompts table - stores predefined topics for journaling
- */
-export const writingPrompts = mysqlTable("writing_prompts", {
-  id: int("id").autoincrement().primaryKey(),
-  /** Prompt text */
-  text: text("text").notNull(),
-  /** Category: gratitude or philosophical */
-  category: mysqlEnum("category", ["gratitude", "philosophical"]).notNull(),
-  /** Display order */
-  sortOrder: int("sortOrder").default(0).notNull(),
-  /** Whether this prompt is active */
-  isActive: boolean("isActive").default(true).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
 export type WritingPrompt = typeof writingPrompts.$inferSelect;
 export type InsertWritingPrompt = typeof writingPrompts.$inferInsert;
-
-
-/**
- * Favorite insights table - stores user's favorite sage insights
- */
-export const favoriteInsights = mysqlTable("favorite_insights", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  /** The sage who gave this insight */
-  sage: mysqlEnum("sage", ["confucius", "laozi", "buddha", "plato"]).notNull(),
-  /** The insight content */
-  content: text("content").notNull(),
-  /** The original journal content that prompted this insight */
-  originalContent: text("originalContent"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
 
 export type FavoriteInsight = typeof favoriteInsights.$inferSelect;
 export type InsertFavoriteInsight = typeof favoriteInsights.$inferInsert;
