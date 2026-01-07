@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1767382792591,
+      "tag": "0000_milky_kitty_pryde",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1767382940430,
+      "tag": "0001_cold_cargill",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1767703387994,
+      "tag": "0002_narrow_dust",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,968 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap');
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --font-sans: "Noto Sans SC", system-ui, sans-serif;
+  --font-serif: "Noto Serif SC", Georgia, serif;
+  --font-brush: "Ma Shan Zheng", cursive;
+  --font-classic: "ZCOOL XiaoWei", serif;
+}
+
+/* ========================================
+   BASE THEME: Immersive Night
+   简约自然沉浸式 - 让人想写日记的氛围
+   ======================================== */
+:root {
+  --radius: 0.75rem;
+  
+  /* Deep immersive dark with subtle warmth */
+  --background: oklch(0.08 0.01 260); /* Deep night blue-black */
+  --foreground: oklch(0.92 0.01 80); /* Warm off-white */
+  --card: oklch(0.12 0.015 260); /* Slightly lighter card */
+  --card-foreground: oklch(0.92 0.01 80);
+  --popover: oklch(0.12 0.015 260);
+  --popover-foreground: oklch(0.92 0.01 80);
+  --primary: oklch(0.75 0.08 80); /* Warm amber glow */
+  --primary-foreground: oklch(0.1 0.01 260);
+  --secondary: oklch(0.18 0.015 260);
+  --secondary-foreground: oklch(0.85 0.01 80);
+  --muted: oklch(0.18 0.01 260);
+  --muted-foreground: oklch(0.55 0.02 80);
+  --accent: oklch(0.65 0.06 180); /* Soft teal accent */
+  --accent-foreground: oklch(0.1 0.01 260);
+  --destructive: oklch(0.55 0.18 25);
+  --destructive-foreground: oklch(0.95 0 0);
+  --border: oklch(0.25 0.015 260);
+  --input: oklch(0.15 0.01 260);
+  --ring: oklch(0.75 0.08 80);
+  --chart-1: oklch(0.75 0.08 80);
+  --chart-2: oklch(0.65 0.06 180);
+  --chart-3: oklch(0.6 0.08 320);
+  --chart-4: oklch(0.7 0.1 140);
+  --chart-5: oklch(0.55 0.12 280);
+  --sidebar: oklch(0.06 0.01 260);
+  --sidebar-foreground: oklch(0.92 0.01 80);
+  --sidebar-primary: oklch(0.75 0.08 80);
+  --sidebar-primary-foreground: oklch(0.1 0.01 260);
+  --sidebar-accent: oklch(0.2 0.015 260);
+  --sidebar-accent-foreground: oklch(0.92 0.01 80);
+  --sidebar-border: oklch(0.25 0.015 260);
+  --sidebar-ring: oklch(0.75 0.08 80);
+  
+  /* Theme-specific glow colors */
+  --theme-accent: oklch(0.75 0.08 80);
+  --theme-glow: oklch(0.75 0.08 80 / 25%);
+  --theme-glow-subtle: oklch(0.75 0.08 80 / 12%);
+  --theme-glow-strong: oklch(0.75 0.08 80 / 40%);
+}
+
+/* ========================================
+   SAGE THEME: Confucius (孔子)
+   Chinese Classical Scroll Style
+   ======================================== */
+.theme-confucius {
+  --background: oklch(0.94 0.02 85); /* Rice paper cream */
+  --foreground: oklch(0.2 0.02 30); /* Dark ink */
+  --card: oklch(0.96 0.015 85);
+  --card-foreground: oklch(0.2 0.02 30);
+  --popover: oklch(0.96 0.015 85);
+  --popover-foreground: oklch(0.2 0.02 30);
+  --primary: oklch(0.45 0.18 25); /* Vermillion red 朱红 */
+  --primary-foreground: oklch(0.96 0.015 85);
+  --secondary: oklch(0.88 0.02 85);
+  --secondary-foreground: oklch(0.3 0.02 30);
+  --muted: oklch(0.88 0.02 85);
+  --muted-foreground: oklch(0.45 0.02 30);
+  --accent: oklch(0.45 0.18 25);
+  --accent-foreground: oklch(0.96 0.015 85);
+  --border: oklch(0.75 0.03 60);
+  --input: oklch(0.92 0.015 85);
+  --ring: oklch(0.45 0.18 25);
+  --theme-accent: oklch(0.45 0.18 25);
+  --theme-glow: oklch(0.45 0.18 25 / 25%);
+  --theme-glow-subtle: oklch(0.45 0.18 25 / 10%);
+  --theme-glow-strong: oklch(0.45 0.18 25 / 40%);
+}
+
+.theme-confucius body,
+.theme-confucius .font-override {
+  font-family: "ZCOOL XiaoWei", "Noto Serif SC", serif !important;
+}
+
+/* ========================================
+   SAGE THEME: Laozi (老子)
+   Pure White Minimalist Style - 道法自然
+   ======================================== */
+.theme-laozi {
+  --background: oklch(0.99 0 0); /* Pure white */
+  --foreground: oklch(0.15 0 0); /* Near black */
+  --card: oklch(0.97 0 0); /* Soft white */
+  --card-foreground: oklch(0.15 0 0);
+  --popover: oklch(0.97 0 0);
+  --popover-foreground: oklch(0.15 0 0);
+  --primary: oklch(0.35 0 0); /* Dark gray */
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.94 0 0);
+  --secondary-foreground: oklch(0.25 0 0);
+  --muted: oklch(0.94 0 0);
+  --muted-foreground: oklch(0.5 0 0);
+  --accent: oklch(0.45 0 0); /* Medium gray */
+  --accent-foreground: oklch(0.99 0 0);
+  --border: oklch(0.88 0 0);
+  --input: oklch(0.96 0 0);
+  --ring: oklch(0.35 0 0);
+  --theme-accent: oklch(0.35 0 0);
+  --theme-glow: oklch(0.35 0 0 / 15%);
+  --theme-glow-subtle: oklch(0.35 0 0 / 8%);
+  --theme-glow-strong: oklch(0.35 0 0 / 25%);
+}
+
+.theme-laozi body,
+.theme-laozi .font-override {
+  font-family: "Ma Shan Zheng", "Noto Serif SC", cursive !important;
+}
+
+/* ========================================
+   SAGE THEME: Buddha (释迦牟尼)
+   Zen Golden Style
+   ======================================== */
+.theme-buddha {
+  --background: oklch(0.1 0.02 60); /* Deep warm black */
+  --foreground: oklch(0.85 0.08 85); /* Soft gold */
+  --card: oklch(0.14 0.02 60);
+  --card-foreground: oklch(0.85 0.08 85);
+  --popover: oklch(0.14 0.02 60);
+  --popover-foreground: oklch(0.85 0.08 85);
+  --primary: oklch(0.72 0.12 85); /* Gold */
+  --primary-foreground: oklch(0.1 0.02 60);
+  --secondary: oklch(0.18 0.02 60);
+  --secondary-foreground: oklch(0.75 0.08 85);
+  --muted: oklch(0.18 0.02 60);
+  --muted-foreground: oklch(0.55 0.05 85);
+  --accent: oklch(0.62 0.1 350); /* Lotus pink */
+  --accent-foreground: oklch(0.1 0.02 60);
+  --border: oklch(0.3 0.04 85);
+  --input: oklch(0.16 0.02 60);
+  --ring: oklch(0.72 0.12 85);
+  --theme-accent: oklch(0.72 0.12 85);
+  --theme-glow: oklch(0.72 0.12 85 / 30%);
+  --theme-glow-subtle: oklch(0.72 0.12 85 / 15%);
+  --theme-glow-strong: oklch(0.72 0.12 85 / 45%);
+}
+
+.theme-buddha body,
+.theme-buddha .font-override {
+  font-family: "Noto Serif SC", Georgia, serif !important;
+}
+
+/* ========================================
+   SAGE THEME: Plato (柏拉图)
+   Ancient Greek Marble Style
+   ======================================== */
+.theme-plato {
+  --background: oklch(0.96 0.008 90); /* Marble white */
+  --foreground: oklch(0.25 0.02 250); /* Deep blue-gray */
+  --card: oklch(0.98 0.006 90);
+  --card-foreground: oklch(0.25 0.02 250);
+  --popover: oklch(0.98 0.006 90);
+  --popover-foreground: oklch(0.25 0.02 250);
+  --primary: oklch(0.52 0.1 85); /* Olive gold */
+  --primary-foreground: oklch(0.98 0.006 90);
+  --secondary: oklch(0.92 0.008 90);
+  --secondary-foreground: oklch(0.35 0.02 250);
+  --muted: oklch(0.92 0.008 90);
+  --muted-foreground: oklch(0.5 0.02 250);
+  --accent: oklch(0.48 0.08 250); /* Aegean blue */
+  --accent-foreground: oklch(0.98 0.006 90);
+  --border: oklch(0.85 0.012 90);
+  --input: oklch(0.94 0.006 90);
+  --ring: oklch(0.52 0.1 85);
+  --theme-accent: oklch(0.52 0.1 85);
+  --theme-glow: oklch(0.52 0.1 85 / 25%);
+  --theme-glow-subtle: oklch(0.52 0.1 85 / 12%);
+  --theme-glow-strong: oklch(0.52 0.1 85 / 40%);
+}
+
+.theme-plato body,
+.theme-plato .font-override {
+  font-family: "Noto Sans SC", system-ui, sans-serif !important;
+  letter-spacing: 0.02em;
+}
+
+/* ========================================
+   BASE LAYER
+   ======================================== */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    transition: background-color 1.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                color 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    @apply cursor-pointer;
+  }
+  h1, h2, h3 {
+    @apply font-serif;
+  }
+}
+
+/* ========================================
+   COMPONENT LAYER
+   ======================================== */
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .flex {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1280px;
+    }
+  }
+
+  /* ========================================
+     MICRO-INTERACTION: Hover Glow Effects
+     微交互：悬停时泛起柔和光晕
+     ======================================== */
+  
+  /* Interactive element base - subtle glow on hover */
+  .interactive-glow {
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .interactive-glow::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    background: radial-gradient(
+      ellipse at center,
+      var(--theme-glow-subtle) 0%,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  .interactive-glow:hover::before {
+    opacity: 1;
+  }
+  
+  .interactive-glow:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Button with soft glow */
+  .btn-glow {
+    @apply relative overflow-visible;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .btn-glow::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: inherit;
+    background: radial-gradient(
+      ellipse at center,
+      var(--theme-glow) 0%,
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  .btn-glow:hover::after {
+    opacity: 1;
+  }
+  
+  .btn-glow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px var(--theme-glow-subtle);
+  }
+
+  /* Card with ambient glow */
+  .card-glow {
+    @apply relative;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--border);
+  }
+  
+  .card-glow::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      var(--theme-glow-subtle) 0%,
+      transparent 50%,
+      var(--theme-glow-subtle) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  .card-glow:hover::before {
+    opacity: 1;
+  }
+  
+  .card-glow:hover {
+    border-color: var(--theme-accent);
+    box-shadow: 
+      0 0 30px var(--theme-glow-subtle),
+      0 8px 32px oklch(0 0 0 / 20%);
+    transform: translateY(-2px);
+  }
+
+  /* Icon button with circular glow */
+  .icon-glow {
+    @apply relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .icon-glow::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at center,
+      var(--theme-glow) 0%,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease-out;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  .icon-glow:hover::after {
+    opacity: 1;
+  }
+  
+  .icon-glow:hover {
+    transform: scale(1.1);
+  }
+
+  /* Sage avatar hover effects - enhanced */
+  .sage-avatar {
+    @apply relative cursor-pointer;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sage-avatar::after {
+    content: '';
+    @apply absolute rounded-full;
+    inset: -8px;
+    background: radial-gradient(
+      circle at center,
+      var(--theme-glow) 0%,
+      var(--theme-glow-subtle) 40%,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .sage-avatar:hover::after {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  
+  .sage-avatar:hover {
+    transform: scale(1.08) translateY(-4px);
+  }
+
+  /* Writing area styles - immersive */
+  .writing-area {
+    @apply bg-card rounded-xl;
+    border: 1px solid var(--border);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .writing-area:focus-within {
+    border-color: var(--theme-accent);
+    box-shadow: 
+      0 0 40px var(--theme-glow-subtle),
+      0 0 80px var(--theme-glow-subtle),
+      inset 0 0 20px var(--theme-glow-subtle);
+  }
+
+  .writing-textarea {
+    @apply w-full min-h-[300px] bg-transparent resize-none focus:outline-none;
+    @apply text-lg leading-relaxed;
+    font-family: inherit;
+  }
+
+  /* Sage card styles */
+  .sage-card {
+    @apply bg-card rounded-xl p-4;
+    border: 1px solid var(--border);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sage-card:hover {
+    border-color: var(--theme-accent);
+    box-shadow: 
+      0 0 25px var(--theme-glow-subtle),
+      0 8px 32px oklch(0 0 0 / 15%);
+    transform: translateY(-2px);
+  }
+
+  /* Floating panel */
+  .floating-panel {
+    @apply bg-card rounded-xl;
+    border: 1px solid var(--border);
+    box-shadow: 
+      0 8px 32px oklch(0 0 0 / 25%),
+      0 0 60px var(--theme-glow-subtle);
+  }
+
+  /* Button styles - with glow */
+  .btn-outline {
+    @apply relative border border-foreground/30 bg-transparent text-foreground;
+    @apply rounded-full;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .btn-outline::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    background: radial-gradient(
+      ellipse at center,
+      var(--theme-glow) 0%,
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease-out;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  .btn-outline:hover {
+    @apply border-foreground/60 bg-foreground/5;
+    transform: translateY(-2px);
+  }
+  
+  .btn-outline:hover::after {
+    opacity: 1;
+  }
+
+  .btn-primary {
+    @apply relative bg-primary text-primary-foreground;
+    @apply rounded-full;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: inherit;
+    background: radial-gradient(
+      ellipse at center,
+      var(--theme-glow-strong) 0%,
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease-out;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px var(--theme-glow);
+  }
+  
+  .btn-primary:hover::after {
+    opacity: 1;
+  }
+
+  /* Prompt card with glow */
+  .prompt-card {
+    @apply relative p-5 rounded-xl bg-card/50 backdrop-blur-sm;
+    border: 1px solid var(--border);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .prompt-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      var(--theme-glow-subtle) 0%,
+      transparent 40%,
+      transparent 60%,
+      var(--theme-glow-subtle) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  .prompt-card:hover {
+    border-color: var(--theme-accent);
+    background: var(--card);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px var(--theme-glow-subtle);
+  }
+  
+  .prompt-card:hover::before {
+    opacity: 1;
+  }
+
+  /* Quick action button */
+  .quick-action {
+    @apply relative flex flex-col items-center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .quick-action-icon {
+    @apply relative w-14 h-14 rounded-full border border-foreground/20 flex items-center justify-center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .quick-action-icon::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at center,
+      var(--theme-glow) 0%,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease-out;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  .quick-action:hover .quick-action-icon {
+    @apply border-foreground/50 bg-foreground/5;
+    transform: scale(1.1) translateY(-2px);
+  }
+  
+  .quick-action:hover .quick-action-icon::after {
+    opacity: 1;
+  }
+}
+
+/* ========================================
+   SMOOTH THEME TRANSITION
+   Elegant, silky-smooth color transitions
+   ======================================== */
+
+/* Global transition for all theme-aware elements */
+.theme-transitioning,
+.theme-transitioning * {
+  transition: 
+    background-color 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+    color 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.8s ease-out !important;
+}
+
+/* Ensure smooth transitions on key elements */
+.sage-avatar,
+.sage-card,
+.writing-area,
+.floating-panel,
+button,
+a,
+input,
+textarea {
+  transition: 
+    background-color 1s cubic-bezier(0.4, 0, 0.2, 1),
+    color 1s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 1s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 1s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 3px;
+  opacity: 0.5;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  opacity: 0.8;
+}
+
+/* Custom scrollbar for insight panels */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 2px;
+  opacity: 0.3;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  opacity: 0.6;
+}
+
+/* Thin scrollbar for insight cards */
+.custom-scrollbar-thin::-webkit-scrollbar {
+  width: 3px;
+}
+
+.custom-scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 2px;
+  opacity: 0.3;
+}
+
+.custom-scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  opacity: 0.5;
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 0 0 10px var(--theme-glow-subtle), 0 0 20px var(--theme-glow-subtle);
+  }
+  50% { 
+    box-shadow: 0 0 20px var(--theme-glow), 0 0 40px var(--theme-glow);
+  }
+}
+
+@keyframes breathe {
+  0%, 100% { 
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-breathe {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+/* Streak flame animation */
+@keyframes flame {
+  0%, 100% { transform: scaleY(1) scaleX(1); }
+  50% { transform: scaleY(1.15) scaleX(0.9); }
+}
+
+.animate-flame {
+  animation: flame 0.6s ease-in-out infinite;
+}
+
+/* Progress ring */
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+/* Line art style for sage avatars */
+.sage-line-art {
+  stroke: currentColor;
+  stroke-width: 1.5;
+  fill: none;
+}
+
+/* ========================================
+   AMBIENT BACKGROUND EFFECTS
+   自然沉浸式背景效果
+   ======================================== */
+
+/* Subtle gradient overlay for depth */
+.ambient-bg {
+  position: relative;
+}
+
+.ambient-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 20% 20%, var(--theme-glow-subtle) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, var(--theme-glow-subtle) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.5;
+}
+
+/* Noise texture for organic feel */
+.noise-texture::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.02;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Theme-specific decorations */
+.theme-confucius .decoration-seal {
+  color: var(--primary);
+  font-family: "ZCOOL XiaoWei", serif;
+}
+
+.theme-laozi .decoration-mist {
+  background: linear-gradient(180deg, transparent, oklch(0.9 0 0 / 30%));
+}
+
+.theme-buddha .decoration-lotus {
+  color: var(--accent);
+}
+
+.theme-plato .decoration-column {
+  color: var(--accent);
+}
+
+/* ========================================
+   FOCUS STATES - Accessible glow
+   ======================================== */
+:focus-visible {
+  outline: 2px solid var(--theme-accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 20px var(--theme-glow);
+}
+
+/* ========================================
+   SELECTION STYLE
+   ======================================== */
+::selection {
+  background: var(--theme-accent);
+  color: var(--background);
+}
+
+
+/* ========================================
+   CARD CAROUSEL ANIMATIONS
+   卡片轮播滑动动画
+   ======================================== */
+
+/* Card slide animation */
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes slideOutToLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100px) scale(0.8);
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100px) scale(0.8);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slideInFromLeft 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInFromRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slide-out-left {
+  animation: slideOutToLeft 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slide-out-right {
+  animation: slideOutToRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Loading pulse animation for insights */
+@keyframes thinking-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.animate-thinking {
+  animation: thinking-pulse 1.5s ease-in-out infinite;
+}
+
+/* Sage insight fade in */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+/* Staggered animation for multiple items */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
