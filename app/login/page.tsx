@@ -16,11 +16,12 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [isLogin, setIsLogin] = useState(true) // true = Login, false = Sign Up
   
-  const supabase = createClient()
-
+  // const supabase = createClient() // Move this inside handlers to avoid build-time exec
+  
   const handleGoogleLogin = async () => {
     try {
       setIsGoogleLoading(true)
+      const supabase = createClient()
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -48,6 +49,7 @@ export default function LoginPage() {
       
       if (isLogin) {
         // Sign In
+        const supabase = createClient()
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
@@ -58,6 +60,7 @@ export default function LoginPage() {
         window.location.href = '/' // Force reload to update auth state
       } else {
         // Sign Up
+        const supabase = createClient()
         const { error } = await supabase.auth.signUp({
           email,
           password,
