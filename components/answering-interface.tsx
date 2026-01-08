@@ -266,19 +266,19 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFCF8] text-gray-900 flex flex-col pb-20">
+    <div className="min-h-screen bg-[#FDFCF8] dark:bg-background text-gray-900 dark:text-foreground flex flex-col pb-20 transition-colors duration-300">
       {/* Header */}
-      <header className="py-6 px-6 sticky top-0 bg-[#FDFCF8]/80 backdrop-blur-md z-10 border-b border-gray-100">
+      <header className="py-6 px-6 sticky top-0 bg-[#FDFCF8]/80 dark:bg-background/80 backdrop-blur-md z-10 border-b border-gray-100 dark:border-border transition-colors duration-300">
         <div className="max-w-4xl mx-auto space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-serif font-bold text-[#5F7368]">今日觉察</h1>
-              <p className="text-xs text-gray-500">
+              <h1 className="text-xl font-serif font-bold text-[#5F7368] dark:text-primary transition-colors">今日觉察</h1>
+              <p className="text-xs text-gray-500 dark:text-muted-foreground">
                 {new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>
             <div className="text-right">
-              <span className="text-sm font-medium text-[#5F7368]">
+              <span className="text-sm font-medium text-[#5F7368] dark:text-primary transition-colors">
                 今日完成: {completedCount}/3
               </span>
             </div>
@@ -294,9 +294,9 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
             <div className="space-y-8 flex flex-col items-center">
               
               {/* Theme Toggle Capsule */}
-              <div className="bg-stone-100 p-1 rounded-full flex relative w-48 shadow-inner">
+              <div className="bg-stone-100 dark:bg-secondary p-1 rounded-full flex relative w-48 shadow-inner transition-colors">
                 <motion.div 
-                  className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-full shadow-sm z-0"
+                  className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-primary/20 rounded-full shadow-sm z-0 transition-colors"
                   animate={{ left: theme === 'gratitude' ? '4px' : 'calc(50%)' }}
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
@@ -304,7 +304,7 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                   onClick={() => handleThemeChange('gratitude')}
                   className={cn(
                     "flex-1 relative z-10 text-sm font-medium py-2 rounded-full transition-colors",
-                    theme === 'gratitude' ? "text-[#5F7368]" : "text-gray-500"
+                    theme === 'gratitude' ? "text-[#5F7368] dark:text-primary" : "text-gray-500 dark:text-muted-foreground"
                   )}
                 >
                   感恩
@@ -313,7 +313,7 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                   onClick={() => handleThemeChange('philosophical')}
                   className={cn(
                     "flex-1 relative z-10 text-sm font-medium py-2 rounded-full transition-colors",
-                    theme === 'philosophical' ? "text-[#5F7368]" : "text-gray-500"
+                    theme === 'philosophical' ? "text-[#5F7368] dark:text-primary" : "text-gray-500 dark:text-muted-foreground"
                   )}
                 >
                   哲思
@@ -334,15 +334,15 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                       onClick={handleSelectPrompt}
                     >
                       <Card className={cn(
-                        "h-full flex flex-col justify-center items-center p-8 cursor-pointer hover:shadow-xl transition-shadow border-stone-200 bg-white relative overflow-hidden group",
-                        batchType === 'ai' && "border-indigo-100 bg-indigo-50/30"
+                        "h-full flex flex-col justify-center items-center p-8 cursor-pointer hover:shadow-xl transition-shadow border-stone-200 dark:border-border bg-white dark:bg-card relative overflow-hidden group",
+                        batchType === 'ai' && "border-indigo-100 dark:border-indigo-900 bg-indigo-50/30 dark:bg-indigo-900/30"
                       )}>
                         {/* Decorative Quote Icon */}
-                        <div className="absolute top-6 left-6 text-6xl text-stone-100 font-serif opacity-50 group-hover:text-stone-200 transition-colors">“</div>
+                        <div className="absolute top-6 left-6 text-6xl text-stone-100 dark:text-muted font-serif opacity-50 group-hover:text-stone-200 dark:group-hover:text-muted-foreground transition-colors">“</div>
                         
                         {/* AI Badge */}
                         {batchType === 'ai' && (
-                          <div className="absolute top-4 right-4 bg-indigo-100 text-indigo-600 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                          <div className="absolute top-4 right-4 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-200 text-xs px-2 py-1 rounded-full flex items-center gap-1">
                             <Sparkles className="w-3 h-3" />
                             <span>AI 灵感</span>
                           </div>
@@ -351,17 +351,17 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                         <CardContent className="text-center z-10 max-w-lg">
                           {isLoading ? (
                             <div className="flex flex-col items-center gap-4">
-                              <RefreshCw className="w-8 h-8 animate-spin text-[#5F7368]" />
-                              <p className="text-gray-400">正在寻找灵感...</p>
+                              <RefreshCw className="w-8 h-8 animate-spin text-[#5F7368] dark:text-primary" />
+                              <p className="text-gray-400 dark:text-muted-foreground">正在寻找灵感...</p>
                             </div>
                           ) : (
-                            <h3 className="text-2xl md:text-3xl font-serif font-medium text-gray-800 leading-relaxed">
+                            <h3 className="text-2xl md:text-3xl font-serif font-medium text-gray-800 dark:text-foreground leading-relaxed transition-colors">
                               {prompts[currentIndex]?.text}
                             </h3>
                           )}
                         </CardContent>
                         
-                        <div className="absolute bottom-8 text-sm text-gray-400 font-medium">
+                        <div className="absolute bottom-8 text-sm text-gray-400 dark:text-muted-foreground font-medium transition-colors">
                           点击卡片开始书写
                         </div>
                       </Card>
@@ -377,12 +377,12 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                   size="icon" 
                   onClick={handlePrev} 
                   disabled={currentIndex === 0 || isLoading}
-                  className="rounded-full hover:bg-stone-100"
+                  className="rounded-full hover:bg-stone-100 dark:hover:bg-secondary transition-colors"
                 >
-                  <ChevronLeft className="w-6 h-6 text-gray-600" />
+                  <ChevronLeft className="w-6 h-6 text-gray-600 dark:text-muted-foreground transition-colors" />
                 </Button>
                 
-                <span className="text-sm font-medium text-gray-400 font-mono">
+                <span className="text-sm font-medium text-gray-400 dark:text-muted-foreground font-mono transition-colors">
                   {currentIndex + 1} / {prompts.length}
                 </span>
 
@@ -391,9 +391,9 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                   size="icon" 
                   onClick={handleNext}
                   disabled={isLoading}
-                  className="rounded-full hover:bg-stone-100"
+                  className="rounded-full hover:bg-stone-100 dark:hover:bg-secondary transition-colors"
                 >
-                  <ChevronRight className="w-6 h-6 text-gray-600" />
+                  <ChevronRight className="w-6 h-6 text-gray-600 dark:text-muted-foreground transition-colors" />
                 </Button>
               </div>
 
@@ -411,7 +411,7 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
 
               <Card className="border-none shadow-none bg-transparent">
                 <CardHeader className="px-0">
-                  <h2 className="text-2xl font-serif font-bold text-gray-800 leading-relaxed">
+                  <h2 className="text-2xl font-serif font-bold text-gray-800 dark:text-foreground leading-relaxed transition-colors">
                     {selectedPrompt}
                   </h2>
                 </CardHeader>
@@ -422,15 +422,15 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         placeholder="在此写下你的思考..."
-                        className="min-h-[300px] p-6 text-lg leading-relaxed resize-none border-stone-200 focus:border-[#5F7368] focus:ring-[#5F7368] bg-white shadow-sm rounded-xl"
+                        className="min-h-[300px] p-6 text-lg leading-relaxed resize-none border-stone-200 dark:border-border focus:border-[#5F7368] dark:focus:border-primary focus:ring-[#5F7368] dark:focus:ring-primary bg-white dark:bg-card dark:text-foreground shadow-sm rounded-xl transition-colors"
                       />
                       {inspirationInsight && (
-                        <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-100 shadow-sm">
+                        <Card className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 border-orange-100 dark:border-orange-900 shadow-sm transition-colors">
                           <CardHeader className="pb-3">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <span className="text-2xl">{inspirationInsight.emoji}</span>
-                                <CardTitle className="text-base font-bold text-orange-800">
+                                <CardTitle className="text-base font-bold text-orange-800 dark:text-orange-200 transition-colors">
                                   {inspirationInsight.sage} · 灵感洞察
                                 </CardTitle>
                               </div>
@@ -438,7 +438,7 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                                 onClick={handleSwitchSage}
                                 variant="ghost"
                                 size="sm"
-                                className="text-orange-600 hover:text-orange-700 hover:bg-orange-100 px-2 h-7"
+                                className="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 hover:bg-orange-100 dark:hover:bg-orange-900 px-2 h-7 transition-colors"
                                 title="切换智者"
                               >
                                 <RefreshCw className="w-3 h-3" />
@@ -446,7 +446,7 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <p className="text-sm text-orange-700 leading-relaxed">
+                            <p className="text-sm text-orange-700 dark:text-orange-300 leading-relaxed transition-colors">
                               {inspirationInsight.insight}
                             </p>
                           </CardContent>
@@ -455,7 +455,7 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
 
                       <div className="space-y-3">
                         {/* 智者指示器 */}
-                        <div className="flex items-center justify-between text-sm text-gray-500">
+                        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-muted-foreground transition-colors">
                           <div className="flex items-center gap-2">
                             <span className="text-orange-500">{SAGES[Object.keys(SAGES)[currentSageIndex] as keyof typeof SAGES].emoji}</span>
                             <span>当前智者: {SAGES[Object.keys(SAGES)[currentSageIndex] as keyof typeof SAGES].name}</span>
@@ -464,7 +464,7 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                             onClick={handleSwitchSage}
                             variant="ghost"
                             size="sm"
-                            className="text-gray-400 hover:text-orange-600 hover:bg-orange-50 px-2 h-6 text-xs"
+                            className="text-gray-400 dark:text-muted-foreground hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950 px-2 h-6 text-xs transition-colors"
                           >
                             <RefreshCw className="w-3 h-3 mr-1" />
                             切换
@@ -476,7 +476,7 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                             onClick={handleGetInspiration}
                             disabled={isGettingInspiration || !content.trim()}
                             variant="outline"
-                            className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                            className="border-orange-200 dark:border-orange-900 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
                           >
                             {isGettingInspiration ? (
                               <>
@@ -494,7 +494,7 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                           <Button 
                             onClick={handleSubmit} 
                             disabled={isSubmitting || !content.trim()}
-                            className="bg-[#5F7368] hover:bg-[#4E6056] text-white px-8 py-6 text-lg rounded-full transition-all hover:scale-105"
+                            className="bg-[#5F7368] dark:bg-primary hover:bg-[#4E6056] dark:hover:bg-primary/90 text-white dark:text-primary-foreground px-8 py-6 text-lg rounded-full transition-all hover:scale-105"
                           >
                             {isSubmitting ? (
                               <>
@@ -513,27 +513,27 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                   </>
                 ) : (
                     <div className="space-y-8">
-                      <div className="bg-white p-6 rounded-xl border border-stone-100 shadow-sm">
-                        <p className="text-lg text-gray-700 leading-relaxed whitespace-pre-wrap">{content}</p>
+                      <div className="bg-white dark:bg-card p-6 rounded-xl border border-stone-100 dark:border-border shadow-sm transition-colors">
+                        <p className="text-lg text-gray-700 dark:text-foreground leading-relaxed whitespace-pre-wrap transition-colors">{content}</p>
                       </div>
                       
                       <div className="space-y-6">
-                        <div className="flex items-center gap-2 text-[#5F7368]">
+                        <div className="flex items-center gap-2 text-[#5F7368] dark:text-primary transition-colors">
                           <Sparkles className="w-5 h-5" />
                           <h3 className="font-semibold text-lg">智者启示</h3>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {insights.map((insight, idx) => (
-                            <Card key={idx} className="bg-[#FDFCF8] border-stone-200 hover:shadow-md transition-all">
+                            <Card key={idx} className="bg-[#FDFCF8] dark:bg-card border-stone-200 dark:border-border hover:shadow-md transition-all">
                               <CardHeader className="pb-2">
                                 <div className="flex items-center gap-2">
                                   <span className="text-2xl">{insight.emoji}</span>
-                                  <CardTitle className="text-base font-bold text-gray-800">{insight.sage}</CardTitle>
+                                  <CardTitle className="text-base font-bold text-gray-800 dark:text-foreground transition-colors">{insight.sage}</CardTitle>
                                 </div>
                               </CardHeader>
                               <CardContent>
-                                <p className="text-sm text-gray-600 leading-relaxed">
+                                <p className="text-sm text-gray-600 dark:text-muted-foreground leading-relaxed transition-colors">
                                   {insight.insight}
                                 </p>
                               </CardContent>
@@ -542,7 +542,7 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                         </div>
 
                         <div className="flex justify-center pt-8">
-                          <Button onClick={handleNextQuestion} variant="outline" className="border-[#5F7368] text-[#5F7368] hover:bg-[#E8F3E8]">
+                          <Button onClick={handleNextQuestion} variant="outline" className="border-[#5F7368] dark:border-primary text-[#5F7368] dark:text-primary hover:bg-[#E8F3E8] dark:hover:bg-primary/20 transition-colors">
                             <CheckCircle2 className="mr-2 h-4 w-4" />
                             完成并开始下一题
                           </Button>

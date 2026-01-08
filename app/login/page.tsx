@@ -84,21 +84,21 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-[#FDFCF8]">
+    <div className="flex min-h-screen w-full bg-[#FDFCF8] dark:bg-background transition-colors duration-300">
       {/* Left: Auth Form */}
       <div className="flex w-full flex-col justify-center px-8 lg:w-[45%] lg:px-20 xl:px-32 relative">
         <div className="mx-auto w-full max-w-[400px]">
           
           {/* Logo / Brand */}
           <div className="mb-12">
-            <h2 className="text-xl font-serif font-medium text-[#5F7368]">Enlightenment Journal</h2>
+            <h2 className="text-xl font-serif font-medium text-[#5F7368] dark:text-primary transition-colors">Enlightenment Journal</h2>
           </div>
 
           <div className="space-y-2 mb-8">
-            <h1 className="text-3xl font-serif font-medium text-gray-900">
+            <h1 className="text-3xl font-serif font-medium text-gray-900 dark:text-foreground transition-colors">
               {isLogin ? '欢迎回来' : '创建账号'}
             </h1>
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 dark:text-muted-foreground text-sm transition-colors">
               {isLogin ? '开启您的觉察之旅' : '开启您的觉察之旅'}
             </p>
           </div>
@@ -107,7 +107,7 @@ export default function LoginPage() {
             {/* Google Login */}
             <Button
               variant="outline"
-              className="w-full h-12 bg-white border-gray-200 hover:bg-gray-50 hover:text-gray-900 text-gray-700 font-medium rounded-xl shadow-sm transition-all"
+              className="w-full h-12 bg-white dark:bg-card border-gray-200 dark:border-border hover:bg-gray-50 dark:hover:bg-secondary hover:text-gray-900 dark:hover:text-foreground text-gray-700 dark:text-muted-foreground font-medium rounded-xl shadow-sm transition-all"
               onClick={handleGoogleLogin}
               disabled={isGoogleLoading || isLoading}
             >
@@ -138,10 +138,10 @@ export default function LoginPage() {
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-gray-200" />
+                <span className="w-full border-t border-gray-200 dark:border-border transition-colors" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-[#FDFCF8] px-2 text-gray-400">或者</span>
+                <span className="bg-[#FDFCF8] dark:bg-background px-2 text-gray-400 dark:text-muted-foreground transition-colors">或者</span>
               </div>
             </div>
 
@@ -150,7 +150,7 @@ export default function LoginPage() {
                 <Input
                   type="email"
                   placeholder="输入您的邮箱"
-                  className="h-12 rounded-xl bg-white border-gray-200 focus-visible:ring-[#5F7368] focus-visible:border-[#5F7368]"
+                  className="h-12 rounded-xl bg-white dark:bg-card dark:text-foreground border-gray-200 dark:border-border focus-visible:ring-[#5F7368] dark:focus-visible:ring-primary focus-visible:border-[#5F7368] dark:focus-visible:border-primary transition-colors"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -158,7 +158,7 @@ export default function LoginPage() {
                 <Input
                   type="password"
                   placeholder="输入密码"
-                  className="h-12 rounded-xl bg-white border-gray-200 focus-visible:ring-[#5F7368] focus-visible:border-[#5F7368]"
+                  className="h-12 rounded-xl bg-white dark:bg-card dark:text-foreground border-gray-200 dark:border-border focus-visible:ring-[#5F7368] dark:focus-visible:ring-primary focus-visible:border-[#5F7368] dark:focus-visible:border-primary transition-colors"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -167,7 +167,7 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full h-12 bg-[#5F7368] hover:bg-[#4E6056] text-white font-medium rounded-xl shadow-lg shadow-[#5F7368]/20 transition-all mt-6"
+                className="w-full h-12 bg-[#5F7368] dark:bg-primary hover:bg-[#4E6056] dark:hover:bg-primary/90 text-white dark:text-primary-foreground font-medium rounded-xl shadow-lg shadow-[#5F7368]/20 dark:shadow-primary/20 transition-all mt-6"
                 disabled={isLoading || isGoogleLoading}
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -176,8 +176,8 @@ export default function LoginPage() {
             </form>
 
             <div className="text-center mt-8">
-              <p className="text-xs text-gray-400">
-                继续即表示您同意 Vilas 的 <a href="#" className="underline hover:text-gray-600">服务条款</a> 和 <a href="#" className="underline hover:text-gray-600">隐私政策</a>
+              <p className="text-xs text-gray-400 dark:text-muted-foreground transition-colors">
+                继续即表示您同意 Vilas 的 <a href="#" className="underline hover:text-gray-600 dark:hover:text-muted-foreground">服务条款</a> 和 <a href="#" className="underline hover:text-gray-600 dark:hover:text-muted-foreground">隐私政策</a>
               </p>
             </div>
           </div>
@@ -185,11 +185,11 @@ export default function LoginPage() {
       </div>
 
       {/* Right: Illustration */}
-      <div className="hidden lg:flex lg:w-[55%] bg-[#F5F5F0] items-center justify-center relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-[55%] bg-[#F5F5F0] dark:bg-secondary/30 items-center justify-center relative overflow-hidden transition-colors">
         {/* Background Pattern Grid */}
-        <div className="absolute inset-0 opacity-[0.03]" 
+        <div className="absolute inset-0 opacity-[0.03] text-black dark:text-white" 
              style={{ 
-               backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', 
+               backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)', 
                backgroundSize: '40px 40px' 
              }} 
         />

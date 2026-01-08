@@ -43,21 +43,21 @@ export default async function HistoryPage({
   const totalPages = Math.max(Math.ceil(totalCount / PAGE_SIZE), 1)
 
   return (
-    <div className="min-h-screen bg-[#FDFCF8]">
+    <div className="min-h-screen bg-[#FDFCF8] dark:bg-background transition-colors duration-300">
       <AppNavbar userEmail={user.email} />
       
       <main className="pt-24 pb-12 px-4 max-w-4xl mx-auto">
         <div className="flex items-center gap-3 mb-8">
-          <div className="p-2 bg-[#E8F3E8] rounded-full">
-            <Calendar className="w-6 h-6 text-[#5F7368]" />
+          <div className="p-2 bg-[#E8F3E8] dark:bg-primary/20 rounded-full transition-colors">
+            <Calendar className="w-6 h-6 text-[#5F7368] dark:text-primary transition-colors" />
           </div>
-          <h1 className="text-2xl font-serif font-bold text-[#5F7368]">历史</h1>
-          <p className="text-sm text-gray-500">{format(new Date(), "yyyy年M月d日", { locale: zhCN })}</p>
+          <h1 className="text-2xl font-serif font-bold text-[#5F7368] dark:text-primary transition-colors">历史</h1>
+          <p className="text-sm text-gray-500 dark:text-muted-foreground transition-colors">{format(new Date(), "yyyy年M月d日", { locale: zhCN })}</p>
         </div>
 
         {/* Insights Card */}
         {totalCount > 0 && (
-          <Card className="mb-8 border-none shadow-lg bg-gradient-to-br from-orange-50 to-amber-50 overflow-hidden">
+          <Card className="mb-8 border-none shadow-lg bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 overflow-hidden transition-colors">
             <CardContent className="p-8 text-center">
               <div className="flex justify-center mb-6">
                 <Image
@@ -69,9 +69,9 @@ export default async function HistoryPage({
                   priority
                 />
               </div>
-              <h2 className="text-xl font-serif font-bold text-gray-900 mb-2">深度回顾与洞察</h2>
-              <p className="text-gray-600 mb-1">基于你的 {totalCount} 篇日记</p>
-              <p className="text-sm text-gray-500 mb-6">发现你的成长、关系、内在智慧</p>
+              <h2 className="text-xl font-serif font-bold text-gray-900 dark:text-foreground mb-2 transition-colors">深度回顾与洞察</h2>
+              <p className="text-gray-600 dark:text-muted-foreground mb-1 transition-colors">基于你的 {totalCount} 篇日记</p>
+              <p className="text-sm text-gray-500 dark:text-muted-foreground mb-6 transition-colors">发现你的成长、关系、内在智慧</p>
               <Link href="/history/insights">
                 <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full px-6 py-2 inline-flex items-center gap-2">
                   开始探索
@@ -83,30 +83,30 @@ export default async function HistoryPage({
         )}
 
         {totalCount === 0 ? (
-          <div className="text-center py-20 bg-white/50 rounded-2xl border border-gray-100">
-            <Sparkles className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 font-medium">还没有记录，开始你的第一次觉察吧</p>
+          <div className="text-center py-20 bg-white/50 dark:bg-card/50 rounded-2xl border border-gray-100 dark:border-border transition-colors">
+            <Sparkles className="w-12 h-12 text-gray-300 dark:text-muted mx-auto mb-4 transition-colors" />
+            <p className="text-gray-500 dark:text-muted-foreground font-medium transition-colors">还没有记录，开始你的第一次觉察吧</p>
           </div>
         ) : (
           <div className="space-y-6">
             {entries.map((entry) => (
-              <Card key={entry.id} className="border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 bg-white/80 backdrop-blur-sm">
+              <Card key={entry.id} className="border-gray-100 dark:border-border shadow-sm hover:shadow-md transition-all duration-300 bg-white/80 dark:bg-card/80 backdrop-blur-sm">
                 <CardHeader className="pb-3">
                   <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Badge variant="secondary" className={
                           entry.category === 'gratitude' 
-                            ? "bg-amber-50 text-amber-700 hover:bg-amber-100" 
-                            : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
+                            ? "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors" 
+                            : "bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-200 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors"
                         }>
                           {entry.category === 'gratitude' ? '感恩日记' : '哲思时刻'}
                         </Badge>
-                        <span className="text-xs text-gray-400 font-medium">
+                        <span className="text-xs text-gray-400 dark:text-muted-foreground font-medium transition-colors">
                           {format(entry.createdAt, "yyyy年M月d日 EEEE HH:mm", { locale: zhCN })}
                         </span>
                       </div>
-                      <CardTitle className="text-lg font-medium text-gray-900 leading-relaxed">
+                      <CardTitle className="text-lg font-medium text-gray-900 dark:text-foreground leading-relaxed transition-colors">
                         {entry.promptText || "自由书写"}
                       </CardTitle>
                     </div>
@@ -119,30 +119,30 @@ export default async function HistoryPage({
             ))}
 
             <div className="flex items-center justify-between pt-4">
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-500 dark:text-muted-foreground transition-colors">
                 第 {currentPage} / {totalPages} 页
               </div>
               <div className="flex gap-2">
                 {currentPage > 1 ? (
                   <Link href={`/history?page=${currentPage - 1}`}>
-                    <Button variant="outline" className="border-gray-200">
+                    <Button variant="outline" className="border-gray-200 dark:border-border transition-colors">
                       上一页
                     </Button>
                   </Link>
                 ) : (
-                  <Button variant="outline" disabled className="border-gray-200">
+                  <Button variant="outline" disabled className="border-gray-200 dark:border-border transition-colors">
                     上一页
                   </Button>
                 )}
 
                 {currentPage < totalPages ? (
                   <Link href={`/history?page=${currentPage + 1}`}>
-                    <Button variant="outline" className="border-gray-200">
+                    <Button variant="outline" className="border-gray-200 dark:border-border transition-colors">
                       下一页
                     </Button>
                   </Link>
                 ) : (
-                  <Button variant="outline" disabled className="border-gray-200">
+                  <Button variant="outline" disabled className="border-gray-200 dark:border-border transition-colors">
                     下一页
                   </Button>
                 )}

@@ -12,7 +12,7 @@ export default async function FreeRecordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFCF8]">
+    <div className="min-h-screen bg-[#FDFCF8] dark:bg-background transition-colors duration-300">
       <AppNavbar userEmail={user.email} />
       
       <main className="pt-20 pb-12">

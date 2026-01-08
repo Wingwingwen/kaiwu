@@ -75,7 +75,7 @@ export function EntryExpander({ entryId, userId }: { entryId: number; userId: st
         size="sm" 
         onClick={toggleExpanded} 
         disabled={loading}
-        className="text-xs text-gray-500 hover:text-gray-700 inline-flex items-center gap-1"
+        className="text-xs text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground inline-flex items-center gap-1 transition-colors"
       >
         {loading ? '加载中...' : (
           <>
@@ -88,22 +88,22 @@ export function EntryExpander({ entryId, userId }: { entryId: number; userId: st
       {expanded && entry && (
         <div className="mt-3 space-y-4">
           {/* 日记内容 */}
-          <div className="prose prose-stone max-w-none">
-            <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+          <div className="prose prose-stone dark:prose-invert max-w-none transition-colors">
+            <p className="text-gray-700 dark:text-foreground whitespace-pre-wrap leading-relaxed transition-colors">
               {entry.content}
             </p>
           </div>
           
           {/* 智者回应 */}
           {Array.isArray(entry.sageInsights) && entry.sageInsights.length > 0 && (
-            <div className="pt-4 border-t border-gray-100">
-              <h4 className="text-sm font-medium text-gray-500 mb-3 flex items-center gap-2">
+            <div className="pt-4 border-t border-gray-100 dark:border-border transition-colors">
+              <h4 className="text-sm font-medium text-gray-500 dark:text-muted-foreground mb-3 flex items-center gap-2 transition-colors">
                 <Sparkles className="w-4 h-4" />
                 智者回应
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {entry.sageInsights.map((insight, idx) => (
-                  <div key={idx} className="bg-[#FDFCF8] p-3 rounded-lg border border-gray-100 text-sm">
+                  <div key={idx} className="bg-[#FDFCF8] dark:bg-card p-3 rounded-lg border border-gray-100 dark:border-border text-sm transition-colors">
                     <div className="flex items-center gap-2 mb-1">
                       <Image
                         src={getSageAvatar(insight.sage)}
@@ -112,9 +112,9 @@ export function EntryExpander({ entryId, userId }: { entryId: number; userId: st
                         height={32}
                         className="rounded-full"
                       />
-                      <span className="font-medium text-[#5F7368]">{insight.sage}</span>
+                      <span className="font-medium text-[#5F7368] dark:text-primary transition-colors">{insight.sage}</span>
                     </div>
-                    <p className="text-gray-600">{insight.insight}</p>
+                    <p className="text-gray-600 dark:text-muted-foreground transition-colors">{insight.insight}</p>
                   </div>
                 ))}
               </div>
