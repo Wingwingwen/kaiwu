@@ -1,4 +1,4 @@
-import { openai, MODEL } from "@/lib/ai/client";
+import { openai, MODEL, MODEL_PRIORITIES } from "@/lib/ai/client";
 import { JournalEntry } from "@/drizzle/schema";
 
 export type GeneratedTopic = {
@@ -13,6 +13,43 @@ export type GeneratedTopicsResponse = {
 };
 
 const SYSTEM_ROLE = `You are a creative writing coach who helps users discover deeper gratitude through personalized, thought-provoking questions.`;
+
+// 智能模型切换函数
+async function tryModelWithFallback(
+  messages: any[],
+  response_format?: any,
+  temperature: number = 0.8,
+  currentModelIndex: number = 0
+): Promise<any> {
+  const model = MODEL_PRIORITIES[currentModelIndex];
+  
+  try {
+    console.log(`题目生成器尝试模型 ${model} (优先级 ${currentModelIndex + 1}/${MODEL_PRIORITIES.length})`);
+    
+    const completion = await openai.chat.completions.create({
+      model,
+      messages,
+      response_format,
+      temperature,
+    });
+    
+    console.log(`题目生成器模型 ${model} 调用成功`);
+    return completion;
+    
+  } catch (error: any) {
+    console.error(`题目生成器模型 ${model} 失败:`, error.message);
+    
+    // 如果是限流错误且还有备用模型，尝试下一个
+    if (error.status === 429 && currentModelIndex < MODEL_PRIORITIES.length - 1) {
+      console.log(`题目生成器切换到备用模型 ${MODEL_PRIORITIES[currentModelIndex + 1]}`);
+      // 等待1.5秒后重试，避免过快切换
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      return tryModelWithFallback(messages, response_format, temperature, currentModelIndex + 1);
+    }
+    
+    throw error;
+  }
+}
 
 export async function generateDynamicPromptsNoHistory(): Promise<GeneratedTopic[]> {
   const prompt = `生成5个独特、有深度的感恩日记题目:
@@ -39,16 +76,12 @@ export async function generateDynamicPromptsNoHistory(): Promise<GeneratedTopic[
 }`;
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: MODEL,
-      messages: [
-        { role: "system", content: SYSTEM_ROLE },
-        { role: "user", content: prompt },
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.8,
-    });
-
+    const messages = [
+      { role: "system", content: SYSTEM_ROLE },
+      { role: "user", content: prompt },
+    ];
+    
+    const completion = await tryModelWithFallback(messages, { type: "json_object" }, 0.8);
     const content = completion.choices[0].message.content;
     if (!content) return [];
     
@@ -56,6 +89,7 @@ export async function generateDynamicPromptsNoHistory(): Promise<GeneratedTopic[
     return result.topics;
   } catch (error) {
     console.error("Error generating dynamic prompts (no history):", error);
+    // Return empty array to trigger fallback
     return [];
   }
 }
@@ -90,23 +124,20 @@ ${entriesSummary}
 }`;
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: MODEL,
-      messages: [
-        { role: "system", content: SYSTEM_ROLE },
-        { role: "user", content: prompt },
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.8,
-    });
-
+    const messages = [
+      { role: "system", content: SYSTEM_ROLE },
+      { role: "user", content: prompt },
+    ];
+    
+    const completion = await tryModelWithFallback(messages, { type: "json_object" }, 0.8);
     const content = completion.choices[0].message.content;
     if (!content) return [];
-
+    
     const result = JSON.parse(content) as GeneratedTopicsResponse;
     return result.topics;
   } catch (error) {
     console.error("Error generating dynamic prompts (with history):", error);
+    // Return empty array to trigger fallback
     return [];
   }
 }

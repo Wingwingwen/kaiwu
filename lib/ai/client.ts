@@ -7,4 +7,13 @@ export const openai = new OpenAI({
   dangerouslyAllowBrowser: true, // Allow client-side usage if needed (though we prefer server-side)
 });
 
-export const MODEL = process.env.OPENROUTER_MODEL || "google/gemini-2.0-flash-exp:free";
+// 模型降级策略 - 按优先级排序
+export const MODEL_PRIORITIES = [
+  "x-ai/grok-4.1-fast",                  // 主要模型: Grok 4.1 Fast
+  "google/gemini-2.0-flash-exp:free",     // 备用1: Gemini免费模型
+  "openai/gpt-4o-mini:free",             // 备用2: OpenAI免费模型
+  "anthropic/claude-3-haiku:free",       // 备用3: Claude免费模型
+  "meta-llama/llama-3.1-8b-instruct:free" // 备用4: Llama免费模型
+] as const;
+
+export const MODEL = process.env.OPENROUTER_MODEL || MODEL_PRIORITIES[0];

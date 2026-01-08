@@ -12,7 +12,8 @@ import { Progress } from "@/components/ui/progress"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { motion, AnimatePresence } from "framer-motion"
 
-import { getAllSageInsights, SageInsightResponse } from "@/app/actions/ai"
+import { getSageInsight, getAllSageInsights, SageInsightResponse } from "@/app/actions/ai"
+import { SAGES } from "@/lib/ai/prompts"
 import { getDynamicPrompts } from "@/app/actions/prompts"
 import { createEntryWithInsights } from "@/app/actions/entry"
 import { STATIC_PROMPTS } from "@/lib/data/static-prompts"
@@ -21,15 +22,16 @@ interface AnsweringInterfaceProps {
   userEmail?: string
   completedCount?: number
   initialPrompts?: any[] // Keep for compatibility but we use local logic
+  mode?: 'daily' | 'free'
 }
 
 type ViewState = 'selection' | 'answering' | 'insights'
 type Theme = 'gratitude' | 'philosophical'
 type BatchType = 'normal' | 'ai'
 
-export function AnsweringInterface({ userEmail, completedCount = 0 }: AnsweringInterfaceProps) {
+export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'daily' }: AnsweringInterfaceProps) {
   // UI State
-  const [view, setView] = useState<ViewState>('selection')
+  const [view, setView] = useState<ViewState>(mode === 'free' ? 'answering' : 'selection')
   
   // Logic State
   const [theme, setTheme] = useState<Theme>('gratitude')
@@ -42,10 +44,13 @@ export function AnsweringInterface({ userEmail, completedCount = 0 }: AnsweringI
   const [isLoading, setIsLoading] = useState(false)
 
   // Answering State
-  const [selectedPrompt, setSelectedPrompt] = useState<string>("")
+  const [selectedPrompt, setSelectedPrompt] = useState<string>(mode === 'free' ? "自由书写" : "")
   const [content, setContent] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [insights, setInsights] = useState<SageInsightResponse[]>([])
+  const [inspirationInsight, setInspirationInsight] = useState<SageInsightResponse | null>(null)
+  const [isGettingInspiration, setIsGettingInspiration] = useState(false)
+  const [currentSageIndex, setCurrentSageIndex] = useState(0)
 
   const router = useRouter()
   const supabase = createClient()
@@ -173,6 +178,39 @@ export function AnsweringInterface({ userEmail, completedCount = 0 }: AnsweringI
     setView('selection')
     setContent("")
     setInsights([])
+    setInspirationInsight(null)
+  }
+
+  const handleGetInspiration = async () => {
+    if (!content.trim()) {
+      toast.error("请先写一些内容再获取灵感...")
+      return
+    }
+
+    setIsGettingInspiration(true)
+    try {
+      const sageKeys = ["confucius", "laozi", "buddha", "plato"] as const
+      const selectedSage = sageKeys[currentSageIndex]
+      
+      const insight = await getSageInsight(content, selectedSage, theme)
+      setInspirationInsight(insight)
+      toast.success("获得灵感洞察 ✨")
+    } catch (error) {
+      console.error("获取灵感失败:", error)
+      toast.error("获取灵感失败，请稍后重试")
+    } finally {
+      setIsGettingInspiration(false)
+    }
+  }
+
+  const handleSwitchSage = () => {
+    const sageKeys = ["confucius", "laozi", "buddha", "plato"] as const
+    const nextIndex = (currentSageIndex + 1) % sageKeys.length
+    setCurrentSageIndex(nextIndex)
+    
+    // 清空当前灵感，鼓励用户重新获取
+    setInspirationInsight(null)
+    toast.info(`已切换至${SAGES[sageKeys[nextIndex]].name}`)
   }
 
   const handleSubmit = async () => {
@@ -351,25 +389,17 @@ export function AnsweringInterface({ userEmail, completedCount = 0 }: AnsweringI
                 </Button>
               </div>
 
-              {/* Free Write */}
-              <Button 
-                variant="link" 
-                className="text-gray-400 hover:text-[#5F7368] mt-4"
-                onClick={handleFreeWrite}
-              >
-                <PenLine className="w-4 h-4 mr-2" />
-                不选题目，自由书写
-              </Button>
-
             </div>
           )}
 
           {(view === 'answering' || view === 'insights') && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <Button variant="ghost" onClick={handleBack} className="mb-4 pl-0 hover:pl-2 transition-all">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                返回选题
-              </Button>
+              {mode !== 'free' && (
+                <Button variant="ghost" onClick={handleBack} className="mb-4 pl-0 hover:pl-2 transition-all">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  返回选题
+                </Button>
+              )}
 
               <Card className="border-none shadow-none bg-transparent">
                 <CardHeader className="px-0">
@@ -386,27 +416,94 @@ export function AnsweringInterface({ userEmail, completedCount = 0 }: AnsweringI
                         placeholder="在此写下你的思考..."
                         className="min-h-[300px] p-6 text-lg leading-relaxed resize-none border-stone-200 focus:border-[#5F7368] focus:ring-[#5F7368] bg-white shadow-sm rounded-xl"
                       />
-                      <div className="flex justify-end">
-                        <Button 
-                          onClick={handleSubmit} 
-                          disabled={isSubmitting || !content.trim()}
-                          className="bg-[#5F7368] hover:bg-[#4E6056] text-white px-8 py-6 text-lg rounded-full transition-all hover:scale-105"
-                        >
-                          {isSubmitting ? (
-                            <>
-                              <RefreshCw className="mr-2 h-5 w-5 animate-spin" />
-                              记录中...
-                            </>
-                          ) : (
-                            <>
-                              完成记录
-                              <Send className="ml-2 h-5 w-5" />
-                            </>
-                          )}
-                        </Button>
+                      {inspirationInsight && (
+                        <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-100 shadow-sm">
+                          <CardHeader className="pb-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <span className="text-2xl">{inspirationInsight.emoji}</span>
+                                <CardTitle className="text-base font-bold text-orange-800">
+                                  {inspirationInsight.sage} · 灵感洞察
+                                </CardTitle>
+                              </div>
+                              <Button
+                                onClick={handleSwitchSage}
+                                variant="ghost"
+                                size="sm"
+                                className="text-orange-600 hover:text-orange-700 hover:bg-orange-100 px-2 h-7"
+                                title="切换智者"
+                              >
+                                <RefreshCw className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <p className="text-sm text-orange-700 leading-relaxed">
+                              {inspirationInsight.insight}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      <div className="space-y-3">
+                        {/* 智者指示器 */}
+                        <div className="flex items-center justify-between text-sm text-gray-500">
+                          <div className="flex items-center gap-2">
+                            <span className="text-orange-500">{SAGES[Object.keys(SAGES)[currentSageIndex] as keyof typeof SAGES].emoji}</span>
+                            <span>当前智者: {SAGES[Object.keys(SAGES)[currentSageIndex] as keyof typeof SAGES].name}</span>
+                          </div>
+                          <Button
+                            onClick={handleSwitchSage}
+                            variant="ghost"
+                            size="sm"
+                            className="text-gray-400 hover:text-orange-600 hover:bg-orange-50 px-2 h-6 text-xs"
+                          >
+                            <RefreshCw className="w-3 h-3 mr-1" />
+                            切换
+                          </Button>
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                          <Button 
+                            onClick={handleGetInspiration}
+                            disabled={isGettingInspiration || !content.trim()}
+                            variant="outline"
+                            className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                          >
+                            {isGettingInspiration ? (
+                              <>
+                                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                                获取中...
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="mr-2 h-4 w-4" />
+                                灵感洞察
+                              </>
+                            )}
+                          </Button>
+                          
+                          <Button 
+                            onClick={handleSubmit} 
+                            disabled={isSubmitting || !content.trim()}
+                            className="bg-[#5F7368] hover:bg-[#4E6056] text-white px-8 py-6 text-lg rounded-full transition-all hover:scale-105"
+                          >
+                            {isSubmitting ? (
+                              <>
+                                <RefreshCw className="mr-2 h-5 w-5 animate-spin" />
+                                记录中...
+                              </>
+                            ) : (
+                              <>
+                                完成记录
+                                <Send className="ml-2 h-5 w-5" />
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       </div>
-                    </>
-                  ) : (
+                  </>
+                ) : (
                     <div className="space-y-8">
                       <div className="bg-white p-6 rounded-xl border border-stone-100 shadow-sm">
                         <p className="text-lg text-gray-700 leading-relaxed whitespace-pre-wrap">{content}</p>
@@ -449,8 +546,8 @@ export function AnsweringInterface({ userEmail, completedCount = 0 }: AnsweringI
               </Card>
             </div>
           )}
-      </div>
-    </main>
+        </div>
+      </main>
     </div>
   )
 }

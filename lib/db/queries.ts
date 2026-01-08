@@ -34,6 +34,69 @@ export async function getUserJournalEntries(userId: string) {
   });
 }
 
+export async function getUserJournalEntriesCount(userId: string) {
+  const result = await db
+    .select({ count: count() })
+    .from(journalEntries)
+    .where(
+      and(
+        eq(journalEntries.userId, userId),
+        eq(journalEntries.isDraft, false)
+      )
+    )
+
+  return result[0]?.count ?? 0
+}
+
+export async function getUserJournalEntriesPage(userId: string, limit: number, offset: number) {
+  return await db.query.journalEntries.findMany({
+    where: and(
+      eq(journalEntries.userId, userId),
+      eq(journalEntries.isDraft, false)
+    ),
+    orderBy: [desc(journalEntries.createdAt)],
+    limit,
+    offset,
+    columns: {
+      id: true,
+      userId: true,
+      createdAt: true,
+      category: true,
+      promptText: true,
+      content: true,
+      sageInsights: true,
+    }
+  })
+}
+
+export async function getUserJournalEntriesList(userId: string, limit: number, offset: number) {
+  return await db.query.journalEntries.findMany({
+    where: and(
+      eq(journalEntries.userId, userId),
+      eq(journalEntries.isDraft, false)
+    ),
+    orderBy: [desc(journalEntries.createdAt)],
+    limit,
+    offset,
+    columns: {
+      id: true,
+      createdAt: true,
+      category: true,
+      promptText: true,
+    }
+  })
+}
+
+export async function getUserJournalEntry(userId: string, entryId: number) {
+  return await db.query.journalEntries.findFirst({
+    where: and(
+      eq(journalEntries.userId, userId),
+      eq(journalEntries.id, entryId),
+      eq(journalEntries.isDraft, false)
+    )
+  })
+}
+
 export async function getUserFavoriteInsights(userId: string) {
   return await db.query.favoriteInsights.findMany({
     where: eq(favoriteInsights.userId, userId),

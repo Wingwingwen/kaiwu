@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { Sparkles, History, Star, LogOut, User } from "lucide-react"
+import { Sparkles, History, PenLine, LogOut, User } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import {
   DropdownMenu,
@@ -38,16 +38,16 @@ export function AppNavbar({ userEmail }: NavbarProps) {
             active: pathname === "/",
         },
         {
-            label: "历史",
+            label: "探索洞察",
             icon: History,
             href: "/history",
             active: pathname?.startsWith("/history"),
         },
         {
-            label: "收藏",
-            icon: Star,
-            href: "/favorites",
-            active: pathname === "/favorites",
+            label: "自由记录",
+            icon: PenLine,
+            href: "/free-record",
+            active: pathname === "/free-record",
         },
     ]
 

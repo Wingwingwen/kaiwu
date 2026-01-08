@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
+import Image from "next/image"
 import { redirect } from "next/navigation"
-import { getUserJournalEntries } from "@/lib/db/queries"
+import { getUserJournalEntriesCount, getUserJournalEntriesList } from "@/lib/db/queries"
 import { AppNavbar } from "@/components/app-navbar"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { format } from "date-fns"
@@ -9,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Sparkles, Calendar, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { EntryExpander } from "@/components/entry-expander"
 
 interface SageInsight {
   emoji: string;
@@ -16,7 +18,17 @@ interface SageInsight {
   insight: string;
 }
 
-export default async function HistoryPage() {
+const PAGE_SIZE = 10
+
+export default async function HistoryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>
+}) {
+  const { page } = await searchParams
+  const currentPage = Math.max(Number.parseInt(page ?? "1", 10) || 1, 1)
+  const offset = (currentPage - 1) * PAGE_SIZE
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -24,7 +36,11 @@ export default async function HistoryPage() {
     redirect("/login")
   }
 
-  const entries = await getUserJournalEntries(user.id)
+  const [totalCount, entries] = await Promise.all([
+    getUserJournalEntriesCount(user.id),
+    getUserJournalEntriesList(user.id, PAGE_SIZE, offset),
+  ])
+  const totalPages = Math.max(Math.ceil(totalCount / PAGE_SIZE), 1)
 
   return (
     <div className="min-h-screen bg-[#FDFCF8]">
@@ -40,14 +56,21 @@ export default async function HistoryPage() {
         </div>
 
         {/* Insights Card */}
-        {entries.length >= 7 && (
+        {totalCount > 0 && (
           <Card className="mb-8 border-none shadow-lg bg-gradient-to-br from-orange-50 to-amber-50 overflow-hidden">
             <CardContent className="p-8 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-orange-100 rounded-full">
-                <Sparkles className="w-8 h-8 text-orange-500" />
+              <div className="flex justify-center mb-6">
+                <Image
+                  src="/sagens/background.png"
+                  alt="Insight Illustration"
+                  width={280}
+                  height={180}
+                  className="object-contain"
+                  priority
+                />
               </div>
               <h2 className="text-xl font-serif font-bold text-gray-900 mb-2">深度回顾与洞察</h2>
-              <p className="text-gray-600 mb-1">基于你的 {entries.length} 篇日记</p>
+              <p className="text-gray-600 mb-1">基于你的 {totalCount} 篇日记</p>
               <p className="text-sm text-gray-500 mb-6">发现你的成长、关系、内在智慧</p>
               <Link href="/history/insights">
                 <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full px-6 py-2 inline-flex items-center gap-2">
@@ -59,7 +82,7 @@ export default async function HistoryPage() {
           </Card>
         )}
 
-        {entries.length === 0 ? (
+        {totalCount === 0 ? (
           <div className="text-center py-20 bg-white/50 rounded-2xl border border-gray-100">
             <Sparkles className="w-12 h-12 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-500 font-medium">还没有记录，开始你的第一次觉察吧</p>
@@ -90,35 +113,41 @@ export default async function HistoryPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="prose prose-stone max-w-none">
-                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                      {entry.content}
-                    </p>
-                  </div>
-                  
-                  {/* Show insights summary if any */}
-                  {Array.isArray(entry.sageInsights) && entry.sageInsights.length > 0 && (
-                    <div className="mt-6 pt-4 border-t border-gray-100">
-                      <h4 className="text-sm font-medium text-gray-500 mb-3 flex items-center gap-2">
-                        <Sparkles className="w-4 h-4" />
-                        智者回应
-                      </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {(entry.sageInsights as unknown as SageInsight[]).map((insight, idx) => (
-                          <div key={idx} className="bg-[#FDFCF8] p-3 rounded-lg border border-gray-100 text-sm">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-lg">{insight.emoji}</span>
-                              <span className="font-medium text-[#5F7368]">{insight.sage}</span>
-                            </div>
-                            <p className="text-gray-600 line-clamp-3">{insight.insight}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  <EntryExpander entryId={entry.id} userId={user.id} />
                 </CardContent>
               </Card>
             ))}
+
+            <div className="flex items-center justify-between pt-4">
+              <div className="text-sm text-gray-500">
+                第 {currentPage} / {totalPages} 页
+              </div>
+              <div className="flex gap-2">
+                {currentPage > 1 ? (
+                  <Link href={`/history?page=${currentPage - 1}`}>
+                    <Button variant="outline" className="border-gray-200">
+                      上一页
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button variant="outline" disabled className="border-gray-200">
+                    上一页
+                  </Button>
+                )}
+
+                {currentPage < totalPages ? (
+                  <Link href={`/history?page=${currentPage + 1}`}>
+                    <Button variant="outline" className="border-gray-200">
+                      下一页
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button variant="outline" disabled className="border-gray-200">
+                    下一页
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </main>
