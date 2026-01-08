@@ -82,33 +82,41 @@ export function AppNavbar({ userEmail }: NavbarProps) {
 
                 {/* Right: User Menu */}
                 <div className="flex items-center gap-2">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                                <Avatar className="h-9 w-9 border border-gray-200">
-                                    <AvatarImage src="" alt={userEmail} />
-                                    <AvatarFallback className="bg-[#E8F3E8] text-[#5F7368]">
-                                        {userEmail?.[0].toUpperCase()}
-                                    </AvatarFallback>
-                                </Avatar>
+                    {userEmail ? (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                                    <Avatar className="h-9 w-9 border border-gray-200">
+                                        <AvatarImage src="" alt={userEmail} />
+                                        <AvatarFallback className="bg-[#E8F3E8] text-[#5F7368]">
+                                            {userEmail[0].toUpperCase()}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56" align="end" forceMount>
+                                <DropdownMenuLabel className="font-normal">
+                                    <div className="flex flex-col space-y-1">
+                                        <p className="text-sm font-medium leading-none">用户</p>
+                                        <p className="text-xs leading-none text-muted-foreground">
+                                            {userEmail}
+                                        </p>
+                                    </div>
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={handleSignOut} className="text-red-600 cursor-pointer">
+                                    <LogOut className="mr-2 h-4 w-4" />
+                                    退出登录
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    ) : (
+                        <Link href="/login">
+                            <Button variant="default" className="bg-[#5F7368] hover:bg-[#4E6056] text-white">
+                                登录
                             </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-56" align="end" forceMount>
-                            <DropdownMenuLabel className="font-normal">
-                                <div className="flex flex-col space-y-1">
-                                    <p className="text-sm font-medium leading-none">用户</p>
-                                    <p className="text-xs leading-none text-muted-foreground">
-                                        {userEmail}
-                                    </p>
-                                </div>
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={handleSignOut} className="text-red-600 cursor-pointer">
-                                <LogOut className="mr-2 h-4 w-4" />
-                                退出登录
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                        </Link>
+                    )}
                 </div>
             </div>
         </div>

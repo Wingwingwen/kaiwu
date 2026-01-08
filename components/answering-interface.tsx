@@ -155,6 +155,10 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
   }
 
   const handleSelectPrompt = () => {
+    if (!userEmail) {
+      router.push('/login')
+      return
+    }
     if (!prompts[currentIndex]) return
     setSelectedPrompt(prompts[currentIndex].text)
     setSkipCount(0) // Reset skip count on selection
@@ -164,6 +168,10 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
   }
 
   const handleFreeWrite = () => {
+    if (!userEmail) {
+      router.push('/login')
+      return
+    }
     setSelectedPrompt("自由书写")
     setSkipCount(0)
     setView('answering')

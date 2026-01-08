@@ -12,23 +12,23 @@ export default async function HomePage() {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/login")
+    // redirect("/login")
   }
 
   // Ensure prompts exist and fetch them
   await seedInitialPrompts()
   const [prompts, completedCount] = await Promise.all([
     getActivePrompts(),
-    getTodayEntryCount(user.id)
+    user ? getTodayEntryCount(user.id) : Promise.resolve(0)
   ])
 
   return (
     <div className="min-h-screen bg-[#FDFCF8]">
-      <AppNavbar userEmail={user.email} />
+      <AppNavbar userEmail={user?.email} />
       
       <main className="pt-20 pb-12">
         <AnsweringInterface 
-          userEmail={user.email} 
+          userEmail={user?.email} 
           initialPrompts={prompts} 
           completedCount={completedCount}
         />
