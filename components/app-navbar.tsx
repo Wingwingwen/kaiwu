@@ -45,12 +45,6 @@ export function AppNavbar({ userEmail }: NavbarProps) {
             href: "/history",
             active: pathname?.startsWith("/history"),
         },
-        {
-            label: "自由记录",
-            icon: PenLine,
-            href: "/free-record",
-            active: pathname === "/free-record",
-        },
     ]
 
     return (
@@ -84,6 +78,16 @@ export function AppNavbar({ userEmail }: NavbarProps) {
 
                 {/* Right: User Menu */}
                 <div className="flex items-center gap-2">
+                    {/* Free Write Button (New) */}
+                    <Link href="/?mode=free">
+                        <Button 
+                            className="bg-[#637369] hover:bg-[#526058] text-white dark:bg-[#637369] dark:hover:bg-[#526058] dark:text-white rounded-full mr-2 hidden md:flex items-center gap-2 shadow-sm transition-all hover:scale-105"
+                        >
+                            <PenLine className="w-4 h-4" />
+                            自由记录
+                        </Button>
+                    </Link>
+
                     <Button
                         variant="ghost"
                         size="icon"

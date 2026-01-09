@@ -4,12 +4,11 @@ import { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { RefreshCw, Send, Sparkles, ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, PenLine } from "lucide-react"
+import { RefreshCw, Send, Sparkles, ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, PenLine, Repeat } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
-import { Progress } from "@/components/ui/progress"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -286,41 +285,42 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
               </span>
             </div>
           </div>
-          <Progress value={Math.min((completedCount / 3) * 100, 100)} className="h-2" />
+          <div className="flex gap-2">
+            {[1, 2, 3].map((step) => (
+              <div
+                key={step}
+                className={cn(
+                  "h-2 flex-1 rounded-full transition-colors duration-300",
+                  step <= completedCount 
+                    ? "bg-[#5F7368] dark:bg-primary" 
+                    : "bg-stone-200 dark:bg-secondary"
+                )}
+              />
+            ))}
+          </div>
         </div>
       </header>
 
-      <main className="flex-1 px-4 py-8 flex flex-col items-center w-full">
-        <div className="w-full max-w-2xl">
+      <main className="flex-1 px-4 py-4 md:py-6 flex flex-col items-center w-full overflow-hidden">
+        <div className={cn(
+          "w-full transition-all duration-500 h-full flex flex-col",
+          view === 'selection' ? "max-w-2xl" : "max-w-7xl"
+        )}>
           
           {view === 'selection' && (
-            <div className="space-y-8 flex flex-col items-center">
+            <div className="space-y-4 flex flex-col items-center">
               
-              {/* Theme Toggle Capsule */}
-              <div className="bg-stone-100 dark:bg-secondary p-1 rounded-full flex relative w-48 shadow-inner transition-colors">
-                <motion.div 
-                  className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-primary/20 rounded-full shadow-sm z-0 transition-colors"
-                  animate={{ left: theme === 'gratitude' ? '4px' : 'calc(50%)' }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                />
-                <button 
-                  onClick={() => handleThemeChange('gratitude')}
-                  className={cn(
-                    "flex-1 relative z-10 text-sm font-medium py-2 rounded-full transition-colors",
-                    theme === 'gratitude' ? "text-[#5F7368] dark:text-primary" : "text-gray-500 dark:text-muted-foreground"
-                  )}
+              {/* Theme Toggle Ghost Button */}
+              <div className="w-full flex justify-end px-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleThemeChange(theme === 'gratitude' ? 'philosophical' : 'gratitude')}
+                  className="text-gray-400 hover:text-gray-600 dark:text-muted-foreground dark:hover:text-primary hover:bg-stone-100 dark:hover:bg-secondary/50 transition-all group"
                 >
-                  感恩
-                </button>
-                <button 
-                  onClick={() => handleThemeChange('philosophical')}
-                  className={cn(
-                    "flex-1 relative z-10 text-sm font-medium py-2 rounded-full transition-colors",
-                    theme === 'philosophical' ? "text-[#5F7368] dark:text-primary" : "text-gray-500 dark:text-muted-foreground"
-                  )}
-                >
-                  哲思
-                </button>
+                   <Repeat className="w-3.5 h-3.5 mr-2 group-hover:rotate-180 transition-transform duration-500" />
+                   {theme === 'gratitude' ? '切换为哲思' : '切换为感恩'}
+                </Button>
               </div>
 
               {/* Main Card Carousel */}
@@ -351,7 +351,7 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                           </div>
                         )}
 
-                        <CardContent className="text-center z-10 max-w-lg">
+                        <CardContent className="text-center z-10 max-w-lg pb-24">
                           {isLoading ? (
                             <div className="flex flex-col items-center gap-4">
                               <RefreshCw className="w-8 h-8 animate-spin text-[#5F7368] dark:text-primary" />
@@ -364,8 +364,17 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                           )}
                         </CardContent>
                         
-                        <div className="absolute bottom-8 text-sm text-gray-400 dark:text-muted-foreground font-medium transition-colors">
-                          点击卡片开始书写
+                        {/* Drama CTA Button */}
+                        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-2">
+                          <div className="relative">
+                            {/* Main Button Circle */}
+                            <div className="relative w-14 h-14 bg-[#5F7368] dark:bg-primary rounded-full flex items-center justify-center shadow-lg shadow-[#5F7368]/30 transition-transform duration-300 group-hover:rotate-12">
+                              <PenLine className="w-6 h-6 text-white dark:text-stone-900" />
+                            </div>
+                          </div>
+                          <span className="text-sm font-bold tracking-widest uppercase text-[#5F7368] dark:text-primary opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+                            开始书写
+                          </span>
                         </div>
                       </Card>
                     </motion.div>
@@ -404,163 +413,200 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
           )}
 
           {(view === 'answering' || view === 'insights') && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              {mode !== 'free' && (
-                <Button variant="ghost" onClick={handleBack} className="mb-4 pl-0 hover:pl-2 transition-all">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  返回选题
-                </Button>
-              )}
+            <div className="flex-1 flex flex-col h-full animate-in fade-in zoom-in-95 duration-500">
+              <div className="flex items-center gap-4 mb-4 shrink-0">
+                {mode !== 'free' && (
+                  <Button variant="ghost" onClick={handleBack} className="pl-0 hover:pl-2 transition-all text-gray-500 hover:text-gray-900 dark:text-muted-foreground dark:hover:text-foreground">
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    返回选题
+                  </Button>
+                )}
+                <h2 className="text-xl font-serif font-bold text-gray-800 dark:text-foreground line-clamp-1">
+                  {selectedPrompt}
+                </h2>
+              </div>
 
-              <Card className="border-none shadow-none bg-transparent">
-                <CardHeader className="px-0">
-                  <h2 className="text-2xl font-serif font-bold text-gray-800 dark:text-foreground leading-relaxed transition-colors">
-                    {selectedPrompt}
-                  </h2>
-                </CardHeader>
-                <CardContent className="px-0 space-y-4">
-                  {view === 'answering' ? (
-                    <>
-                      <Textarea
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        placeholder="在此写下你的思考..."
-                        className="min-h-[300px] p-6 text-lg leading-relaxed resize-none border-stone-200 dark:border-border focus:border-[#5F7368] dark:focus:border-primary focus:ring-[#5F7368] dark:focus:ring-primary bg-white dark:bg-card dark:text-foreground shadow-sm rounded-xl transition-colors"
-                      />
+              {view === 'answering' ? (
+                <div className="flex-1 flex flex-col lg:flex-row gap-6 overflow-hidden min-h-0 pb-4">
+                  {/* Left Column: Editor */}
+                  <Card className="flex-[2] flex flex-col overflow-hidden bg-white dark:bg-card border-stone-200 dark:border-border shadow-sm rounded-xl max-h-[70vh]">
+                    <Textarea
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                      placeholder="在此写下你的思考..."
+                      className="flex-1 resize-none border-none focus-visible:ring-0 p-8 text-lg leading-relaxed bg-transparent"
+                    />
+                    <div className="p-4 border-t border-stone-100 dark:border-border bg-stone-50/50 dark:bg-secondary/20 flex justify-end">
+                      <Button 
+                        onClick={handleSubmit} 
+                        disabled={isSubmitting || !content.trim()}
+                        className="bg-[#5F7368] dark:bg-primary hover:bg-[#4E6056] dark:hover:bg-primary/90 text-white dark:text-primary-foreground px-8 rounded-full transition-all hover:scale-105 shadow-md shadow-[#5F7368]/20"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                            记录中...
+                          </>
+                        ) : (
+                          <>
+                            完成记录
+                            <Send className="ml-2 h-4 w-4" />
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </Card>
+
+                  {/* Right Column: AI Assistant */}
+                  <div className="flex-1 lg:max-w-md flex flex-col bg-white/60 dark:bg-card/40 backdrop-blur-md border border-stone-200 dark:border-border rounded-xl overflow-hidden shadow-sm max-h-[70vh]">
+                    <div className="p-4 border-b border-stone-100 dark:border-border bg-white/80 dark:bg-card/80 flex items-center justify-between min-h-[60px]">
+                      <div className="flex items-center gap-2 text-[#5F7368] dark:text-primary">
+                        <Sparkles className="w-5 h-5" />
+                        <h3 className="font-semibold">AI 智者洞察</h3>
+                      </div>
                       {inspirationInsights.length > 0 && (
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-2 text-orange-800 dark:text-orange-200">
-                            <Sparkles className="w-5 h-5" />
-                            <h3 className="font-semibold text-lg">智者灵感</h3>
-                          </div>
-                          <div className="space-y-4">
-                            {inspirationInsights.map((insight, idx) => (
-                              <Card key={idx} className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 border-orange-100 dark:border-orange-900 shadow-sm transition-colors">
-                                <CardHeader className="pb-2">
-                                  <div className="flex items-center gap-2">
-                                    {getSageAvatar(insight.sage) ? (
-                                      <div className="relative w-8 h-8 rounded-full overflow-hidden border border-orange-200 dark:border-orange-800 bg-orange-100 dark:bg-orange-900/50">
-                                        <Image
-                                          src={getSageAvatar(insight.sage)}
-                                          alt={insight.sage}
-                                          fill
-                                          sizes="32px"
-                                          className="object-cover"
-                                        />
-                                      </div>
-                                    ) : (
-                                      <span className="text-2xl">{insight.emoji}</span>
-                                    )}
-                                    <CardTitle className="text-base font-bold text-orange-800 dark:text-orange-200 transition-colors">
-                                      {insight.sage}
-                                    </CardTitle>
-                                  </div>
-                                </CardHeader>
-                                <CardContent>
-                                  <p className="text-sm text-orange-700 dark:text-orange-300 leading-relaxed transition-colors">
-                                    {insight.insight}
-                                  </p>
-                                </CardContent>
-                              </Card>
-                            ))}
-                          </div>
-                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleGetInspiration}
+                          disabled={isGettingInspiration}
+                          className="text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/50 h-8 px-3"
+                        >
+                          {isGettingInspiration ? (
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <>
+                              <RefreshCw className="w-4 h-4 mr-1.5" />
+                              再次请教
+                            </>
+                          )}
+                        </Button>
                       )}
-
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <Button 
-                            onClick={handleGetInspiration}
-                            disabled={isGettingInspiration || !content.trim()}
-                            variant="outline"
-                            className="border-orange-200 dark:border-orange-900 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
-                          >
-                            {isGettingInspiration ? (
-                              <>
-                                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                                获取中...
-                              </>
-                            ) : (
-                              <>
-                                <Sparkles className="mr-2 h-4 w-4" />
-                                灵感洞察
-                              </>
-                            )}
-                          </Button>
-                          
-                          <Button 
-                            onClick={handleSubmit} 
-                            disabled={isSubmitting || !content.trim()}
-                            className="bg-[#5F7368] dark:bg-primary hover:bg-[#4E6056] dark:hover:bg-primary/90 text-white dark:text-primary-foreground px-8 py-6 text-lg rounded-full transition-all hover:scale-105"
-                          >
-                            {isSubmitting ? (
-                              <>
-                                <RefreshCw className="mr-2 h-5 w-5 animate-spin" />
-                                记录中...
-                              </>
-                            ) : (
-                              <>
-                                完成记录
-                                <Send className="ml-2 h-5 w-5" />
-                              </>
-                            )}
-                          </Button>
+                    </div>
+                    
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+                      {inspirationInsights.length === 0 ? (
+                        <div className="h-full flex flex-col items-center justify-center text-center text-gray-400 dark:text-muted-foreground p-8 space-y-4">
+                          <div className="w-16 h-16 rounded-full bg-stone-100 dark:bg-secondary flex items-center justify-center mb-2">
+                            <Sparkles className="w-8 h-8 opacity-50" />
+                          </div>
+                          <p className="text-sm leading-relaxed">
+                            当你感到卡顿时，<br/>
+                            点击下方按钮，<br/>
+                            智者将为你提供灵感指引。
+                          </p>
                         </div>
-                      </div>
-                  </>
-                ) : (
-                    <div className="space-y-8">
-                      <div className="bg-white dark:bg-card p-6 rounded-xl border border-stone-100 dark:border-border shadow-sm transition-colors">
-                        <p className="text-lg text-gray-700 dark:text-foreground leading-relaxed whitespace-pre-wrap transition-colors">{content}</p>
-                      </div>
-                      
-                      <div className="space-y-6">
-                        <div className="flex items-center gap-2 text-[#5F7368] dark:text-primary transition-colors">
-                          <Sparkles className="w-5 h-5" />
-                          <h3 className="font-semibold text-lg">智者启示</h3>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {insights.map((insight, idx) => (
-                            <Card key={idx} className="bg-[#FDFCF8] dark:bg-card border-stone-200 dark:border-border hover:shadow-md transition-all">
-                              <CardHeader className="pb-2">
+                      ) : (
+                        inspirationInsights.map((insight, idx) => (
+                          <div key={idx} className="animate-in slide-in-from-right-4 fade-in duration-500" style={{ animationDelay: `${idx * 100}ms` }}>
+                            <Card className="bg-white dark:bg-card border-orange-100 dark:border-orange-900/50 shadow-sm overflow-hidden group hover:shadow-md transition-all">
+                              <CardHeader className="pb-2 px-4 pt-4 bg-gradient-to-r from-orange-50/50 to-transparent dark:from-orange-950/20">
                                 <div className="flex items-center gap-2">
                                   {getSageAvatar(insight.sage) ? (
-                                    <div className="relative w-8 h-8 rounded-full overflow-hidden border border-stone-200 dark:border-border">
+                                    <div className="relative w-6 h-6 rounded-full overflow-hidden ring-1 ring-orange-200 dark:ring-orange-800">
                                       <Image
                                         src={getSageAvatar(insight.sage)}
                                         alt={insight.sage}
                                         fill
-                                        sizes="32px"
+                                        sizes="24px"
                                         className="object-cover"
                                       />
                                     </div>
                                   ) : (
-                                    <span className="text-2xl">{insight.emoji}</span>
+                                    <span className="text-lg">{insight.emoji}</span>
                                   )}
-                                  <CardTitle className="text-base font-bold text-gray-800 dark:text-foreground transition-colors">{insight.sage}</CardTitle>
+                                  <CardTitle className="text-sm font-bold text-orange-800 dark:text-orange-200">
+                                    {insight.sage}
+                                  </CardTitle>
                                 </div>
                               </CardHeader>
-                              <CardContent>
-                                <p className="text-sm text-gray-600 dark:text-muted-foreground leading-relaxed transition-colors">
+                              <CardContent className="px-4 pb-4 pt-2">
+                                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                                   {insight.insight}
                                 </p>
                               </CardContent>
                             </Card>
-                          ))}
-                        </div>
-
-                        <div className="flex justify-center pt-8">
-                          <Button onClick={handleNextQuestion} variant="outline" className="border-[#5F7368] dark:border-primary text-[#5F7368] dark:text-primary hover:bg-[#E8F3E8] dark:hover:bg-primary/20 transition-colors">
-                            <CheckCircle2 className="mr-2 h-4 w-4" />
-                            完成并开始下一题
-                          </Button>
-                        </div>
-                      </div>
+                          </div>
+                        ))
+                      )}
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+
+                    {inspirationInsights.length === 0 && (
+                      <div className="p-4 border-t border-stone-100 dark:border-border bg-white/80 dark:bg-card/80">
+                        <Button 
+                          onClick={handleGetInspiration}
+                          disabled={isGettingInspiration || !content.trim()}
+                          variant="outline"
+                          className="w-full border-orange-200 dark:border-orange-900 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950 hover:text-orange-700 dark:hover:text-orange-300 transition-colors h-11"
+                        >
+                          {isGettingInspiration ? (
+                            <>
+                              <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                              正在连接智者...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="mr-2 h-4 w-4" />
+                              获取灵感洞察
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="max-w-2xl mx-auto w-full animate-in fade-in slide-in-from-bottom-8 duration-700">
+                   <div className="bg-white dark:bg-card p-8 rounded-xl border border-stone-100 dark:border-border shadow-sm transition-colors mb-8">
+                      <h3 className="text-sm font-medium text-gray-400 dark:text-muted-foreground mb-4 uppercase tracking-wider">你的思考</h3>
+                      <p className="text-lg text-gray-800 dark:text-foreground leading-relaxed whitespace-pre-wrap font-serif">{content}</p>
+                   </div>
+                   
+                   <div className="space-y-6">
+                     <div className="flex items-center justify-center gap-2 text-[#5F7368] dark:text-primary transition-colors mb-4">
+                       <Sparkles className="w-5 h-5" />
+                       <h3 className="font-semibold text-lg">智者回应</h3>
+                     </div>
+                     
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       {insights.map((insight, idx) => (
+                         <Card key={idx} className="bg-[#FDFCF8] dark:bg-card border-stone-200 dark:border-border hover:shadow-md transition-all group">
+                           <CardHeader className="pb-2">
+                             <div className="flex items-center gap-2">
+                               {getSageAvatar(insight.sage) ? (
+                                 <div className="relative w-8 h-8 rounded-full overflow-hidden border border-stone-200 dark:border-border group-hover:scale-110 transition-transform">
+                                   <Image
+                                     src={getSageAvatar(insight.sage)}
+                                     alt={insight.sage}
+                                     fill
+                                     sizes="32px"
+                                     className="object-cover"
+                                   />
+                                 </div>
+                               ) : (
+                                 <span className="text-2xl">{insight.emoji}</span>
+                               )}
+                               <CardTitle className="text-base font-bold text-gray-800 dark:text-foreground transition-colors">{insight.sage}</CardTitle>
+                             </div>
+                           </CardHeader>
+                           <CardContent>
+                             <p className="text-sm text-gray-600 dark:text-muted-foreground leading-relaxed transition-colors">
+                               {insight.insight}
+                             </p>
+                           </CardContent>
+                         </Card>
+                       ))}
+                     </div>
+
+                     <div className="flex justify-center pt-8">
+                       <Button onClick={handleNextQuestion} variant="outline" className="border-[#5F7368] dark:border-primary text-[#5F7368] dark:text-primary hover:bg-[#E8F3E8] dark:hover:bg-primary/20 transition-colors px-8 py-6 rounded-full text-lg">
+                         <CheckCircle2 className="mr-2 h-5 w-5" />
+                         完成并开始下一题
+                       </Button>
+                     </div>
+                   </div>
+                </div>
+              )}
             </div>
           )}
         </div>
