@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from "react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { RefreshCw, Send, Sparkles, ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, PenLine } from "lucide-react"
@@ -17,6 +18,19 @@ import { SAGES } from "@/lib/ai/prompts"
 import { getDynamicPrompts } from "@/app/actions/prompts"
 import { createEntryWithInsights } from "@/app/actions/entry"
 import { STATIC_PROMPTS } from "@/lib/data/static-prompts"
+
+// 智者头像映射函数
+const getSageAvatar = (sageName: string): string => {
+  const sageKeyMap: Record<string, string> = {
+    '孔子': 'confucius',
+    '老子': 'laozi', 
+    '释迦牟尼': 'buddha',
+    '柏拉图': 'plato'
+  }
+  
+  const key = sageKeyMap[sageName]
+  return key ? `/sagens/${key}-avatar.png` : ''
+}
 
 interface AnsweringInterfaceProps {
   userEmail?: string
@@ -48,9 +62,8 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
   const [content, setContent] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [insights, setInsights] = useState<SageInsightResponse[]>([])
-  const [inspirationInsight, setInspirationInsight] = useState<SageInsightResponse | null>(null)
+  const [inspirationInsights, setInspirationInsights] = useState<SageInsightResponse[]>([])
   const [isGettingInspiration, setIsGettingInspiration] = useState(false)
-  const [currentSageIndex, setCurrentSageIndex] = useState(0)
 
   const router = useRouter()
   const supabase = createClient()
@@ -165,6 +178,7 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
     setView('answering')
     setContent("")
     setInsights([])
+    setInspirationInsights([])
   }
 
   const handleFreeWrite = () => {
@@ -177,6 +191,7 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
     setView('answering')
     setContent("")
     setInsights([])
+    setInspirationInsights([])
   }
 
   const handleBack = () => {
@@ -186,7 +201,7 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
     setView('selection')
     setContent("")
     setInsights([])
-    setInspirationInsight(null)
+    setInspirationInsights([])
   }
 
   const handleGetInspiration = async () => {
@@ -197,11 +212,8 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
 
     setIsGettingInspiration(true)
     try {
-      const sageKeys = ["confucius", "laozi", "buddha", "plato"] as const
-      const selectedSage = sageKeys[currentSageIndex]
-      
-      const insight = await getSageInsight(content, selectedSage, theme)
-      setInspirationInsight(insight)
+      const insights = await getAllSageInsights(content, theme)
+      setInspirationInsights(insights)
       toast.success("获得灵感洞察 ✨")
     } catch (error) {
       console.error("获取灵感失败:", error)
@@ -209,16 +221,6 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
     } finally {
       setIsGettingInspiration(false)
     }
-  }
-
-  const handleSwitchSage = () => {
-    const sageKeys = ["confucius", "laozi", "buddha", "plato"] as const
-    const nextIndex = (currentSageIndex + 1) % sageKeys.length
-    setCurrentSageIndex(nextIndex)
-    
-    // 清空当前灵感，鼓励用户重新获取
-    setInspirationInsight(null)
-    toast.info(`已切换至${SAGES[sageKeys[nextIndex]].name}`)
   }
 
   const handleSubmit = async () => {
@@ -253,6 +255,7 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
     setView('selection')
     setContent("")
     setInsights([])
+    setInspirationInsights([])
     setSelectedPrompt("")
     
     // Advance to next question
@@ -424,53 +427,47 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                         placeholder="在此写下你的思考..."
                         className="min-h-[300px] p-6 text-lg leading-relaxed resize-none border-stone-200 dark:border-border focus:border-[#5F7368] dark:focus:border-primary focus:ring-[#5F7368] dark:focus:ring-primary bg-white dark:bg-card dark:text-foreground shadow-sm rounded-xl transition-colors"
                       />
-                      {inspirationInsight && (
-                        <Card className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 border-orange-100 dark:border-orange-900 shadow-sm transition-colors">
-                          <CardHeader className="pb-3">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <span className="text-2xl">{inspirationInsight.emoji}</span>
-                                <CardTitle className="text-base font-bold text-orange-800 dark:text-orange-200 transition-colors">
-                                  {inspirationInsight.sage} · 灵感洞察
-                                </CardTitle>
-                              </div>
-                              <Button
-                                onClick={handleSwitchSage}
-                                variant="ghost"
-                                size="sm"
-                                className="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 hover:bg-orange-100 dark:hover:bg-orange-900 px-2 h-7 transition-colors"
-                                title="切换智者"
-                              >
-                                <RefreshCw className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          </CardHeader>
-                          <CardContent>
-                            <p className="text-sm text-orange-700 dark:text-orange-300 leading-relaxed transition-colors">
-                              {inspirationInsight.insight}
-                            </p>
-                          </CardContent>
-                        </Card>
+                      {inspirationInsights.length > 0 && (
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2 text-orange-800 dark:text-orange-200">
+                            <Sparkles className="w-5 h-5" />
+                            <h3 className="font-semibold text-lg">智者灵感</h3>
+                          </div>
+                          <div className="space-y-4">
+                            {inspirationInsights.map((insight, idx) => (
+                              <Card key={idx} className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 border-orange-100 dark:border-orange-900 shadow-sm transition-colors">
+                                <CardHeader className="pb-2">
+                                  <div className="flex items-center gap-2">
+                                    {getSageAvatar(insight.sage) ? (
+                                      <div className="relative w-8 h-8 rounded-full overflow-hidden border border-orange-200 dark:border-orange-800 bg-orange-100 dark:bg-orange-900/50">
+                                        <Image
+                                          src={getSageAvatar(insight.sage)}
+                                          alt={insight.sage}
+                                          fill
+                                          sizes="32px"
+                                          className="object-cover"
+                                        />
+                                      </div>
+                                    ) : (
+                                      <span className="text-2xl">{insight.emoji}</span>
+                                    )}
+                                    <CardTitle className="text-base font-bold text-orange-800 dark:text-orange-200 transition-colors">
+                                      {insight.sage}
+                                    </CardTitle>
+                                  </div>
+                                </CardHeader>
+                                <CardContent>
+                                  <p className="text-sm text-orange-700 dark:text-orange-300 leading-relaxed transition-colors">
+                                    {insight.insight}
+                                  </p>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        </div>
                       )}
 
                       <div className="space-y-3">
-                        {/* 智者指示器 */}
-                        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-muted-foreground transition-colors">
-                          <div className="flex items-center gap-2">
-                            <span className="text-orange-500">{SAGES[Object.keys(SAGES)[currentSageIndex] as keyof typeof SAGES].emoji}</span>
-                            <span>当前智者: {SAGES[Object.keys(SAGES)[currentSageIndex] as keyof typeof SAGES].name}</span>
-                          </div>
-                          <Button
-                            onClick={handleSwitchSage}
-                            variant="ghost"
-                            size="sm"
-                            className="text-gray-400 dark:text-muted-foreground hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950 px-2 h-6 text-xs transition-colors"
-                          >
-                            <RefreshCw className="w-3 h-3 mr-1" />
-                            切换
-                          </Button>
-                        </div>
-                        
                         <div className="flex justify-between items-center">
                           <Button 
                             onClick={handleGetInspiration}
@@ -528,7 +525,19 @@ export function AnsweringInterface({ userEmail, completedCount = 0, mode = 'dail
                             <Card key={idx} className="bg-[#FDFCF8] dark:bg-card border-stone-200 dark:border-border hover:shadow-md transition-all">
                               <CardHeader className="pb-2">
                                 <div className="flex items-center gap-2">
-                                  <span className="text-2xl">{insight.emoji}</span>
+                                  {getSageAvatar(insight.sage) ? (
+                                    <div className="relative w-8 h-8 rounded-full overflow-hidden border border-stone-200 dark:border-border">
+                                      <Image
+                                        src={getSageAvatar(insight.sage)}
+                                        alt={insight.sage}
+                                        fill
+                                        sizes="32px"
+                                        className="object-cover"
+                                      />
+                                    </div>
+                                  ) : (
+                                    <span className="text-2xl">{insight.emoji}</span>
+                                  )}
                                   <CardTitle className="text-base font-bold text-gray-800 dark:text-foreground transition-colors">{insight.sage}</CardTitle>
                                 </div>
                               </CardHeader>
