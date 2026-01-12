@@ -5,6 +5,7 @@ import { db } from "@/drizzle/db"
 import { journalEntries, users } from "@/drizzle/schema"
 import { eq } from "drizzle-orm"
 import { SageInsightResponse } from "./ai"
+import { revalidatePath } from "next/cache"
 
 export async function createEntryWithInsights(
   content: string,
@@ -43,5 +44,6 @@ export async function createEntryWithInsights(
     isDraft: false, // It's published
   }).returning()
 
+  revalidatePath("/")
   return entry
 }

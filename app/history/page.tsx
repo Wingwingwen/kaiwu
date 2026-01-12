@@ -48,36 +48,41 @@ export default async function HistoryPage({
       
       <main className="pt-24 pb-12 px-4 max-w-4xl mx-auto">
         <div className="flex items-center gap-3 mb-8">
-          <div className="p-2 bg-[#E8F3E8] dark:bg-primary/20 rounded-full transition-colors">
-            <Calendar className="w-6 h-6 text-[#5F7368] dark:text-primary transition-colors" />
+          <div className="p-2 bg-[#F0F5F2] dark:bg-primary/20 rounded-full transition-colors">
+            <Calendar className="w-6 h-6 text-[#5C7A63] dark:text-primary transition-colors" />
           </div>
-          <h1 className="text-2xl font-serif font-bold text-[#5F7368] dark:text-primary transition-colors">历史</h1>
+          <h1 className="text-2xl font-serif font-bold text-[#5C7A63] dark:text-primary transition-colors">历史</h1>
           <p className="text-sm text-gray-500 dark:text-muted-foreground transition-colors">{format(new Date(), "yyyy年M月d日", { locale: zhCN })}</p>
         </div>
 
         {/* Insights Card */}
         {totalCount > 0 && (
-          <Card className="mb-8 border-none shadow-lg bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 overflow-hidden transition-colors">
-            <CardContent className="p-8 text-center">
-              <div className="flex justify-center mb-6">
+          <Card className="mb-8 border-none shadow-lg overflow-hidden relative min-h-[400px] flex items-center justify-center group">
+            <div className="absolute inset-0 z-0">
                 <Image
-                  src="/sagens/background.png"
-                  alt="Insight Illustration"
-                  width={280}
-                  height={180}
-                  className="object-contain"
+                  src="/history-insight-bg-final.png"
+                  alt="Insight Background"
+                  fill
+                  className="object-contain transition-transform duration-700 group-hover:scale-105"
                   priority
                 />
+                <div className="absolute inset-0 bg-black/30 transition-colors group-hover:bg-black/40" />
+             </div>
+            
+            <CardContent className="relative z-10 p-8 text-center space-y-6 max-w-lg mx-auto">
+              <h2 className="text-3xl font-serif font-bold text-white drop-shadow-lg tracking-wide">深度回顾与洞察</h2>
+              <div className="space-y-2">
+                <p className="text-white/95 text-lg font-medium drop-shadow-md">基于你的 {totalCount} 篇日记</p>
+                <p className="text-white/80 text-sm drop-shadow-md font-light tracking-wide">发现你的成长、关系、内在智慧</p>
               </div>
-              <h2 className="text-xl font-serif font-bold text-gray-900 dark:text-foreground mb-2 transition-colors">深度回顾与洞察</h2>
-              <p className="text-gray-600 dark:text-muted-foreground mb-1 transition-colors">基于你的 {totalCount} 篇日记</p>
-              <p className="text-sm text-gray-500 dark:text-muted-foreground mb-6 transition-colors">发现你的成长、关系、内在智慧</p>
-              <Link href="/history/insights">
-                <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full px-6 py-2 inline-flex items-center gap-2">
-                  开始探索
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
+              <div className="pt-2">
+                <Link href="/history/insights">
+                  <Button className="bg-white/20 hover:bg-white/30 text-white border border-white/50 backdrop-blur-md rounded-full px-8 py-6 text-lg transition-all hover:scale-105 hover:border-white shadow-lg shadow-black/20">
+                    开始探索
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
         )}
@@ -90,10 +95,10 @@ export default async function HistoryPage({
         ) : (
           <div className="space-y-6">
             {entries.map((entry) => (
-              <Card key={entry.id} className="border-gray-100 dark:border-border shadow-sm hover:shadow-md transition-all duration-300 bg-white/80 dark:bg-card/80 backdrop-blur-sm">
-                <CardHeader className="pb-3">
+              <Card key={entry.id} className="gap-1 border-gray-100 dark:border-border shadow-sm hover:shadow-md transition-all duration-300 bg-white/80 dark:bg-card/80 backdrop-blur-sm">
+                <CardHeader className="pb-0">
                   <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <div className="flex items-center gap-2">
                         <Badge variant="secondary" className={
                           entry.category === 'gratitude' 
@@ -112,8 +117,16 @@ export default async function HistoryPage({
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <EntryExpander entryId={entry.id} userId={user.id} />
+                <CardContent className="pt-0">
+                  <EntryExpander 
+                    entryId={entry.id} 
+                    userId={user.id} 
+                    initialEntry={{
+                      id: entry.id,
+                      content: entry.content ?? "",
+                      sageInsights: entry.sageInsights as any
+                    }}
+                  />
                 </CardContent>
               </Card>
             ))}

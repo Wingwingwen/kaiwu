@@ -25,7 +25,7 @@ export function AnalysisLoading({ entryCount }: { entryCount: number }) {
   return (
     <Card className="border-gray-100 shadow-lg">
       <CardHeader>
-        <CardTitle className="text-lg text-center text-[#5F7368]">
+        <CardTitle className="text-lg text-center text-[#D8B064]">
           正在深度解读 {entryCount} 篇日记
         </CardTitle>
       </CardHeader>

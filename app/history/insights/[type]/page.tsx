@@ -94,7 +94,7 @@ export default async function InsightDetailPage({
               <Icon className={`w-8 h-8 ${config.iconColor} transition-colors`} />
             </div>
             <div className="flex-1">
-              <h1 className="text-3xl font-serif font-bold text-[#5F7368] dark:text-primary mb-1 transition-colors">{config.title}</h1>
+              <h1 className="text-3xl font-serif font-bold text-[#D8B064] dark:text-primary mb-1 transition-colors">{config.title}</h1>
               <p className="text-amber-600 dark:text-amber-400 font-medium transition-colors">{config.subtitle}</p>
             </div>
           </div>
@@ -110,7 +110,7 @@ export default async function InsightDetailPage({
                 请先写一篇日记，再来生成洞察分析
               </p>
               <Link href="/">
-                <Button className="bg-[#5F7368] hover:bg-[#4A5A52] text-white">
+                <Button className="bg-[#D8B064] hover:bg-[#4A5A52] text-white">
                   去写日记
                 </Button>
               </Link>

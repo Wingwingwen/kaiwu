@@ -31,6 +31,8 @@ async function tryModelWithFallback(
       messages,
       response_format,
       temperature,
+    }, {
+      timeout: 6000 // 6秒超时，快速失败切换
     });
     
     console.log(`题目生成器模型 ${model} 调用成功`);
@@ -39,11 +41,11 @@ async function tryModelWithFallback(
   } catch (error: any) {
     console.error(`题目生成器模型 ${model} 失败:`, error.message);
     
-    // 如果是限流错误且还有备用模型，尝试下一个
-    if (error.status === 429 && currentModelIndex < MODEL_PRIORITIES.length - 1) {
+    // 如果是限流错误(429)或超时或其它错误，且还有备用模型，尝试下一个
+    if (currentModelIndex < MODEL_PRIORITIES.length - 1) {
       console.log(`题目生成器切换到备用模型 ${MODEL_PRIORITIES[currentModelIndex + 1]}`);
-      // 等待1.5秒后重试，避免过快切换
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // 减少等待时间到200ms (原1500ms)，快速重试
+      await new Promise(resolve => setTimeout(resolve, 200));
       return tryModelWithFallback(messages, response_format, temperature, currentModelIndex + 1);
     }
     

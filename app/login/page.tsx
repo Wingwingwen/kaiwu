@@ -91,7 +91,7 @@ export default function LoginPage() {
           
           {/* Logo / Brand */}
           <div className="mb-12">
-            <h2 className="text-xl font-serif font-medium text-[#5F7368] dark:text-primary transition-colors">Enlightenment Journal</h2>
+            <h2 className="text-xl font-serif font-medium text-[#D8B064] dark:text-primary transition-colors">Enlightenment Journal</h2>
           </div>
 
           <div className="space-y-2 mb-8">
@@ -150,7 +150,7 @@ export default function LoginPage() {
                 <Input
                   type="email"
                   placeholder="输入您的邮箱"
-                  className="h-12 rounded-xl bg-white dark:bg-card dark:text-foreground border-gray-200 dark:border-border focus-visible:ring-[#5F7368] dark:focus-visible:ring-primary focus-visible:border-[#5F7368] dark:focus-visible:border-primary transition-colors"
+                  className="h-12 rounded-xl bg-white dark:bg-card dark:text-foreground border-gray-200 dark:border-border focus-visible:ring-[#D8B064] dark:focus-visible:ring-primary focus-visible:border-[#D8B064] dark:focus-visible:border-primary transition-colors"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -158,7 +158,7 @@ export default function LoginPage() {
                 <Input
                   type="password"
                   placeholder="输入密码"
-                  className="h-12 rounded-xl bg-white dark:bg-card dark:text-foreground border-gray-200 dark:border-border focus-visible:ring-[#5F7368] dark:focus-visible:ring-primary focus-visible:border-[#5F7368] dark:focus-visible:border-primary transition-colors"
+                  className="h-12 rounded-xl bg-white dark:bg-card dark:text-foreground border-gray-200 dark:border-border focus-visible:ring-[#D8B064] dark:focus-visible:ring-primary focus-visible:border-[#D8B064] dark:focus-visible:border-primary transition-colors"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -167,7 +167,7 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full h-12 bg-[#5F7368] dark:bg-primary hover:bg-[#4E6056] dark:hover:bg-primary/90 text-white dark:text-primary-foreground font-medium rounded-xl shadow-lg shadow-[#5F7368]/20 dark:shadow-primary/20 transition-all mt-6"
+                className="w-full h-12 bg-[#D8B064] dark:bg-primary hover:bg-[#C69E53] dark:hover:bg-primary/90 text-white dark:text-primary-foreground font-medium rounded-xl shadow-lg shadow-[#D8B064]/20 dark:shadow-primary/20 transition-all mt-6"
                 disabled={isLoading || isGoogleLoading}
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

@@ -20,9 +20,11 @@ interface JournalEntry {
 // 智者头像映射函数
 const getSageAvatar = (sageName: string): string => {
   const sageKeyMap: Record<string, string> = {
+    '爱的使者': 'confucius',
     '孔子': 'confucius',
     '老子': 'laozi', 
     '释迦牟尼': 'buddha',
+    '马可·奥勒留': 'plato',
     '柏拉图': 'plato'
   }
   
@@ -30,13 +32,16 @@ const getSageAvatar = (sageName: string): string => {
   return key ? `/sagens/${key}-avatar.png` : '/sagens/default-avatar.png'
 }
 
-export function EntryExpander({ entryId, userId }: { entryId: number; userId: string }) {
-  const [expanded, setExpanded] = useState(false)
-  const [entry, setEntry] = useState<JournalEntry | null>(null)
+export function EntryExpander({ entryId, userId, initialEntry }: { entryId: number; userId: string; initialEntry?: JournalEntry | null }) {
+  const [showInsights, setShowInsights] = useState(false)
+  const [entry, setEntry] = useState<JournalEntry | null>(initialEntry || null)
   const [loading, setLoading] = useState(false)
+  
+  // Also support collapsing content if it's very long, but default to visible
+  // const [contentExpanded, setContentExpanded] = useState(true)
 
   const fetchFullEntry = async () => {
-    if (expanded || loading) return
+    if (loading) return
     
     setLoading(true)
     try {
@@ -52,7 +57,7 @@ export function EntryExpander({ entryId, userId }: { entryId: number; userId: st
       
       const data = await res.json()
       setEntry(data)
-      setExpanded(true)
+      setShowInsights(true)
     } catch (error) {
       console.error('Error fetching entry:', error)
     } finally {
@@ -60,68 +65,115 @@ export function EntryExpander({ entryId, userId }: { entryId: number; userId: st
     }
   }
 
-  const toggleExpanded = () => {
-    if (!expanded) {
-      fetchFullEntry()
+  const toggleInsights = () => {
+    if (!showInsights) {
+      if (entry?.sageInsights) {
+        setShowInsights(true)
+      } else {
+        fetchFullEntry()
+      }
     } else {
-      setExpanded(false)
+      setShowInsights(false)
     }
   }
 
-  return (
-    <div className="mt-4">
-      <Button 
-        variant="ghost" 
-        size="sm" 
-        onClick={toggleExpanded} 
-        disabled={loading}
-        className="text-xs text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground inline-flex items-center gap-1 transition-colors"
-      >
-        {loading ? '加载中...' : (
-          <>
-            {expanded ? '收起内容' : '查看完整内容'}
-            {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-          </>
-        )}
-      </Button>
-      
-      {expanded && entry && (
-        <div className="mt-3 space-y-4">
-          {/* 日记内容 */}
-          <div className="prose prose-stone dark:prose-invert max-w-none transition-colors">
-            <p className="text-gray-700 dark:text-foreground whitespace-pre-wrap leading-relaxed transition-colors">
-              {entry.content}
-            </p>
-          </div>
-          
-          {/* 智者回应 */}
-          {Array.isArray(entry.sageInsights) && entry.sageInsights.length > 0 && (
-            <div className="pt-4 border-t border-gray-100 dark:border-border transition-colors">
-              <h4 className="text-sm font-medium text-gray-500 dark:text-muted-foreground mb-3 flex items-center gap-2 transition-colors">
-                <Sparkles className="w-4 h-4" />
-                智者回应
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {entry.sageInsights.map((insight, idx) => (
-                  <div key={idx} className="bg-[#FDFCF8] dark:bg-card p-3 rounded-lg border border-gray-100 dark:border-border text-sm transition-colors">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Image
-                        src={getSageAvatar(insight.sage)}
-                        alt={insight.sage}
-                        width={32}
-                        height={32}
-                        className="rounded-full"
-                      />
-                      <span className="font-medium text-[#5F7368] dark:text-primary transition-colors">{insight.sage}</span>
-                    </div>
-                    <p className="text-gray-600 dark:text-muted-foreground transition-colors">{insight.insight}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+  /*
+  const toggleContent = () => {
+    setContentExpanded(!contentExpanded)
+  }
+  */
+
+  if (!entry) {
+      // Fallback if no initial entry (should not happen with current usage)
+      return (
+        <div className="mt-4">
+             <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={fetchFullEntry} 
+                disabled={loading}
+                className="text-xs text-gray-500"
+              >
+                {loading ? '加载中...' : '查看内容'}
+              </Button>
         </div>
-      )}
+      )
+  }
+
+  return (
+    <div className="mt-0">
+      {/* Content Section - Always rendered if we have entry, but can be collapsed */}
+      <div className="prose prose-stone dark:prose-invert max-w-none overflow-hidden">
+        <p className="mt-0 text-gray-700 dark:text-foreground whitespace-pre-wrap leading-relaxed transition-colors text-base">
+          {entry.content}
+        </p>
+      </div>
+      
+      {/* Sage Insights Section */}
+      <div className="border-t border-dashed border-gray-100 dark:border-border pt-4 mt-4">
+          {!showInsights ? (
+            <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleInsights}
+                disabled={loading}
+                className="text-sm font-medium text-[#5C7A63] dark:text-primary hover:text-[#4A6350] dark:hover:text-primary/90 hover:bg-[#F0F5F2] dark:hover:bg-primary/10 transition-colors"
+            >
+                {loading ? (
+                    <span className="flex items-center gap-2"><Sparkles className="w-4 h-4 animate-spin" /> 正在连接智者...</span>
+                ) : (
+                    <span className="flex items-center gap-2"><Sparkles className="w-4 h-4" /> 查看智者回应</span>
+                )}
+            </Button>
+          ) : (
+             <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-medium text-gray-500 dark:text-muted-foreground flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-orange-500" />
+                        智者回应
+                    </h4>
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setShowInsights(false)}
+                        className="text-xs text-gray-400 hover:text-gray-600 h-6 px-2"
+                    >
+                        收起
+                    </Button>
+                </div>
+                
+                {Array.isArray(entry.sageInsights) && entry.sageInsights.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-4">
+                    {entry.sageInsights.slice(0, 1).map((insight, idx) => (
+                        <div key={idx} className="bg-stone-50 dark:bg-muted/50 rounded-lg p-4 border border-stone-100 dark:border-border/50">
+                        <div className="flex items-center gap-2 mb-2">
+                            {getSageAvatar(insight.sage) ? (
+                            <div className="relative w-8 h-8 rounded-full overflow-hidden ring-1 ring-white dark:ring-border">
+                                <Image
+                                src={getSageAvatar(insight.sage)}
+                                alt={insight.sage}
+                                fill
+                                sizes="32px"
+                                className="object-cover"
+                                />
+                            </div>
+                            ) : (
+                            <span className="text-xl">{insight.emoji}</span>
+                            )}
+                            <span className="font-serif font-bold text-gray-700 dark:text-foreground">{insight.sage}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-muted-foreground leading-relaxed">
+                            {insight.insight}
+                        </p>
+                        </div>
+                    ))}
+                    </div>
+                ) : (
+                    <p className="text-sm text-gray-400 italic">暂无智者回应</p>
+                )}
+             </div>
+          )}
+      </div>
     </div>
   )
 }

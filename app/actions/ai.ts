@@ -248,7 +248,8 @@ async function tryModelWithFallback(
 export async function getSageInsight(
   content: string,
   sageKey: SageKey,
-  category: "gratitude" | "philosophical"
+  category: "gratitude" | "philosophical",
+  mode: "inspiration" | "summary" = "summary"
 ): Promise<SageInsightResponse> {
   const sageConfig = SAGES[sageKey];
   
@@ -256,10 +257,17 @@ export async function getSageInsight(
     ? "用户正在进行感恩写作练习" 
     : "用户正在进行哲思写作练习";
 
+  let modeInstruction = "";
+  if (mode === "inspiration") {
+    modeInstruction = "这是中间的引导阶段。请在回复的最后，抛出一个直指人心的深思问题（one finger pointing to the moon），引导用户基于当前内容写出更多深度的思考。";
+  } else {
+    modeInstruction = "这是最终的总结阶段。请给出一个确定的智慧结语，对用户的思考进行升华和肯定，不要再提出任何问题。";
+  }
+
   const messages = [
     { 
       role: "system", 
-      content: `${sageConfig.systemPrompt}\n\n${categoryContext}。请根据用户的写作内容，提供简短而有深度的引导（100-150字），帮助他们深化思考和感恩体验。` 
+      content: `${sageConfig.systemPrompt}\n\n${categoryContext}。\n${modeInstruction}\n请保持简短而有深度（100-150字）。` 
     },
     { 
       role: "user", 
@@ -268,7 +276,8 @@ export async function getSageInsight(
   ];
 
   try {
-    const completion = await tryModelWithFallback(messages, 0.7, 500);
+    // Increase max_tokens to accommodate reasoning models (like Gemini 2.5 Pro) that consume tokens for thinking
+    const completion = await tryModelWithFallback(messages, 0.7, 4000);
     const insight = completion.choices[0]?.message?.content || "请继续你的思考...";
 
     return {
@@ -282,10 +291,10 @@ export async function getSageInsight(
     
     // 最终降级：返回预设的智慧语录
     const fallbackInsights = {
-      confucius: "学而时习之，不亦说乎？继续你的思考和实践。",
+      confucius: "爱是恒久忍耐，又有恩慈。接纳你自己，就像被无条件地爱着一样。",
       laozi: "道可道，非常道。保持你的觉察和探索。",
       buddha: "一切有为法，如梦幻泡影。观照内心的变化。",
-      plato: "未经审视的人生不值得过。你的反思很有价值。"
+      marcus: "人生就像岩石，不断被海浪拍打，却依然屹立不动。"
     };
     
     return {
@@ -297,29 +306,52 @@ export async function getSageInsight(
   }
 }
 
+export async function generateTitleFromContent(content: string): Promise<string> {
+  const messages = [
+    {
+      role: "system",
+      content: "你是一个专业的编辑。请根据用户的内容，生成一个简短的标题（10字以内），概括内容的核心主题。直接返回标题文本，不要加引号或其他修饰。"
+    },
+    {
+      role: "user",
+      content: content
+    }
+  ];
+
+  try {
+    const completion = await tryModelWithFallback(messages, 0.7, 50);
+    const title = completion.choices[0]?.message?.content?.trim() || "自由书写";
+    return title.replace(/^["']|["']$/g, ''); // Remove quotes if any
+  } catch (error) {
+    console.error("生成标题失败:", error);
+    return "自由书写";
+  }
+}
+
 export async function getAllSageInsights(
   content: string,
-  category: "gratitude" | "philosophical"
+  category: "gratitude" | "philosophical",
+  mode: "inspiration" | "summary" = "summary"
 ): Promise<SageInsightResponse[]> {
-  const sageKeys: SageKey[] = ["confucius", "laozi", "buddha", "plato"];
+  const sageKeys: SageKey[] = ["confucius", "laozi", "buddha", "marcus"];
   
-  // Sequential execution with delays to avoid rate limiting
-  const results: SageInsightResponse[] = [];
-  
-  for (let i = 0; i < sageKeys.length; i++) {
-    try {
-      const insight = await getSageInsight(content, sageKeys[i], category);
-      results.push(insight);
-      
-      // Add delay between requests to avoid rate limiting (except for the last one)
-      if (i < sageKeys.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
-      }
-    } catch (error) {
-      console.error(`Failed to get insight from ${sageKeys[i]}:`, error);
-      // Continue with other sages even if one fails
-    }
-  }
+  // Parallel execution for faster response
+  // Each getSageInsight has its own fallback mechanism, so one failure won't block others
+  const promises = sageKeys.map(key => 
+    getSageInsight(content, key, category, mode)
+      .catch(error => {
+        console.error(`Failed to get insight from ${key}:`, error);
+        // Return a safe fallback structure if an individual request fails completely
+        // (though getSageInsight already handles most errors)
+        return {
+          sage: SAGES[key].name,
+          emoji: SAGES[key].emoji,
+          style: SAGES[key].style,
+          insight: "智者正在沉思...",
+        } as SageInsightResponse;
+      })
+  );
 
+  const results = await Promise.all(promises);
   return results;
 }

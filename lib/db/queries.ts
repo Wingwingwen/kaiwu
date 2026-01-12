@@ -83,6 +83,8 @@ export async function getUserJournalEntriesList(userId: string, limit: number, o
       createdAt: true,
       category: true,
       promptText: true,
+      content: true,
+      sageInsights: true,
     }
   })
 }
@@ -105,10 +107,20 @@ export async function getUserFavoriteInsights(userId: string) {
 }
 
 export async function getActivePrompts() {
-  return await db.query.writingPrompts.findMany({
+  const prompts = await db.query.writingPrompts.findMany({
     where: eq(writingPrompts.isActive, true),
     orderBy: [asc(writingPrompts.sortOrder)],
   })
+
+  if (prompts.length === 0) {
+    await seedInitialPrompts()
+    return await db.query.writingPrompts.findMany({
+      where: eq(writingPrompts.isActive, true),
+      orderBy: [asc(writingPrompts.sortOrder)],
+    })
+  }
+
+  return prompts
 }
 
 export async function seedInitialPrompts() {

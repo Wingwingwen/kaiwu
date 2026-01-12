@@ -80,7 +80,7 @@ export default async function InsightsPage() {
               返回
             </Button>
           </Link>
-          <h1 className="text-3xl font-serif font-bold text-[#5F7368] dark:text-primary mb-2 transition-colors">回顾与洞察</h1>
+          <h1 className="text-3xl font-serif font-bold text-[#D8B064] dark:text-primary mb-2 transition-colors">回顾与洞察</h1>
           <p className="text-gray-600 dark:text-muted-foreground transition-colors">选择你想要探索日记的方式</p>
         </div>
 

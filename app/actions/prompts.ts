@@ -26,7 +26,7 @@ export async function getDynamicPrompts(hasHistory: boolean = false): Promise<Ge
     const recentEntries = await db.query.journalEntries.findMany({
       where: eq(journalEntries.userId, user.id),
       orderBy: [desc(journalEntries.createdAt)],
-      limit: 10, // Analyze last 10 entries
+      limit: 5, // Reduce context to 5 for faster processing
     });
 
     if (recentEntries.length === 0) {
