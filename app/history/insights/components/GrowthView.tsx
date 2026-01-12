@@ -2,61 +2,76 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { GrowthData } from "@/app/actions/ai"
-import { ArrowRight, Sprout } from "lucide-react"
+import { TheoristCard } from "./TheoristCard"
 
 export function GrowthView({ data }: { data: GrowthData }) {
+  if (!data) return null;
+
   return (
-    <div className="space-y-8">
-      {/* Current State */}
-      <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-3xl text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full mb-4 shadow-sm">
-          <Sprout className="w-8 h-8 text-green-600" />
-        </div>
-        <h2 className="text-sm font-medium text-green-600 mb-2 uppercase tracking-wider">当前阶段</h2>
-        <h3 className="text-2xl font-serif font-bold text-gray-900 mb-4">
-          {data.currentLevel}
-        </h3>
-        <p className="text-gray-600 max-w-md mx-auto leading-relaxed">
-          {data.journeyDescription}
-        </p>
-      </div>
-
-      {/* Shifts Timeline */}
-      <div className="relative pl-4 border-l-2 border-gray-100 space-y-8 ml-4">
-        {data.shifts.map((shift, index) => (
-          <div key={index} className="relative">
-            <div className="absolute -left-[21px] top-0 w-4 h-4 rounded-full bg-green-200 border-2 border-white ring-1 ring-gray-100" />
-            <div className="mb-2">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-                {shift.date}
-              </span>
+    <div className="space-y-6 max-w-md mx-auto md:max-w-4xl">
+      {/* Top Section: Theorist & Current Level */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {data.theorist && <TheoristCard theorist={data.theorist} />}
+        
+        <Card className="border-none bg-white dark:bg-zinc-900 text-gray-900 dark:text-white shadow-md h-full">
+          <CardContent className="p-6 flex flex-col justify-center h-full">
+            <div className="text-sm text-gray-500 dark:text-zinc-400 mb-2">你当前的灵性阶段</div>
+            <div className="flex items-baseline gap-3 mb-1">
+              <span className="text-3xl font-bold text-emerald-500">{data.currentLevel}</span>
             </div>
-            <Card className="border-none shadow-sm bg-white hover:shadow-md transition-shadow">
-              <CardContent className="p-5">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3 text-sm">
-                  <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full line-through opacity-70">
-                    {shift.from}
-                  </span>
-                  <ArrowRight className="w-4 h-4 text-gray-300 rotate-90 sm:rotate-0" />
-                  <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full font-medium">
-                    {shift.to}
-                  </span>
-                </div>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {shift.description}
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        ))}
+            <div className="text-xs text-gray-400 dark:text-zinc-500">Hawkins 意识层级参考</div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Encouragement */}
-      <div className="text-center p-6 border-t border-gray-100">
-        <p className="font-handwriting text-xl text-green-700 transform -rotate-1">
-          {data.encouragement}
-        </p>
+      {/* Middle Section: Journey & Key Shifts - Side by Side on Desktop */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Journey Section */}
+        <Card className="border-none bg-white dark:bg-zinc-900 text-gray-900 dark:text-white shadow-md h-full">
+          <CardContent className="p-6 flex flex-col h-full">
+            <div className="flex items-center gap-2 mb-3">
+               <span className="text-xl">🌱</span>
+               <h3 className="font-bold text-lg">你的成长轨迹</h3>
+            </div>
+            <p className="text-gray-700 dark:text-zinc-300 leading-relaxed text-sm flex-1">
+              {data.journeyDescription}
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Key Shifts Section */}
+        <Card className="border-none bg-white dark:bg-zinc-900 text-gray-900 dark:text-white shadow-md h-full">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+               <span className="text-xl">✨</span>
+               <h3 className="font-bold text-lg">关键转变</h3>
+            </div>
+            <div className="space-y-3">
+              {data.shifts.map((shift, index) => (
+                <div key={index} className="flex items-start gap-2">
+                  <span className="text-emerald-500 mt-1.5 w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+                  <p className="text-gray-700 dark:text-zinc-300 text-sm">
+                    从 <span className="text-gray-500 dark:text-zinc-500">{shift.from}</span> 到 <span className="text-emerald-600 dark:text-emerald-400 font-medium">{shift.to}</span>
+                  </p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Encouragement Footer */}
+      <Card className="border border-emerald-100 dark:border-emerald-900/30 bg-white dark:bg-zinc-900 shadow-lg">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-2 mb-3">
+             <span className="text-xl">🌟</span>
+             <h3 className="font-bold text-emerald-600 dark:text-emerald-400">来自高维的视角</h3>
+          </div>
+          <p className="text-gray-700 dark:text-zinc-300 leading-relaxed">
+            {data.encouragement}
+          </p>
+        </CardContent>
+      </Card>
     </div>
   )
 }

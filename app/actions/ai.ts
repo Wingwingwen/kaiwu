@@ -15,16 +15,35 @@ export type InsightType = 'relationships' | 'consciousness' | 'growth' | 'mindfu
 
 export interface RelationshipData {
   summary: string;
-  people: {
+  theorist?: {
     name: string;
+    avatar: string;
+    period?: string;
+    description: string;
+  };
+  analysis?: string;
+  peopleGroups: {
+    category: string;
     emoji: string;
-    count: number;
-    gratitude: string;
+    people: {
+      name: string;
+      emoji: string;
+      count: number;
+      gratitude: string;
+    }[];
   }[];
   insight: string;
 }
 
+export interface Theorist {
+  name: string;
+  avatar: string;
+  period?: string;
+  description: string;
+}
+
 export interface ConsciousnessData {
+  theorist?: Theorist;
   overallLevel: number;
   levelName: string;
   distribution: { low: number; mid: number; high: number };
@@ -38,6 +57,7 @@ export interface ConsciousnessData {
 }
 
 export interface GrowthData {
+  theorist?: Theorist;
   currentLevel: string;
   shifts: {
     date: string;
@@ -50,6 +70,7 @@ export interface GrowthData {
 }
 
 export interface MindfulnessData {
+  theorist?: Theorist;
   intro: string;
   reminders: {
     emoji: string;
@@ -61,6 +82,7 @@ export interface MindfulnessData {
 }
 
 export interface ConflictData {
+  theorist?: Theorist;
   intro: string;
   conflicts: {
     title: string;
@@ -83,22 +105,41 @@ const ANALYSIS_PROMPTS = {
 请返回如下 JSON 格式：
 {
   "summary": "开篇段落，关于用户的人物关系概览（50字左右）",
-  "people": [
+  "theorist": {
+    "name": "格奥尔格·齐美尔",
+    "avatar": "👔",
+    "period": "1858-1918",
+    "description": "德国社会学家，研究社会关系和互动的先驱"
+  },
+  "analysis": "从社会网络理论的角度对用户人物关系的深入分析（80字左右）",
+  "peopleGroups": [
     {
-      "name": "人物名称",
-      "emoji": "代表该人物的Emoji",
-      "count": 提及次数（估算）,
-      "gratitude": "用户感恩他们的具体点或与他们的互动模式（20字以内）"
+      "category": "分类名称（如：我所爱的人、最爱的宠物、重要的导师等）",
+      "emoji": "代表该类别的Emoji（如❤️、🐱、📚等）",
+      "people": [
+        {
+          "name": "人物名称",
+          "emoji": "代表该人物的Emoji",
+          "count": 提及次数（估算）,
+          "gratitude": "用户感恩他们的具体点或与他们的互动模式（30字以内）"
+        }
+      ]
     }
   ],
-  "insight": "一个充满爱的深度洞察（80字左右）"
+  "insight": "一个充满爱的深度洞察，关于人际关系和连接的意义（80字左右）"
 }
-提取前 3-5 位重要人物。`,
+请智能识别人物类型并分类，如：家人、爱人、朋友、宠物、导师等。提取前 3-6 位重要人物，并按类别组织。如果某类只有一个人物，也要创建该分类。`,
 
   consciousness: `
 你是一个基于 David Hawkins 意识地图的分析师。请分析用户的日记，评估其意识层级。
 请返回如下 JSON 格式：
 {
+  "theorist": {
+    "name": "大卫·霍金斯",
+    "avatar": "🧘‍♂️",
+    "period": "1927-2012",
+    "description": "精神导师，意识层级地图创始人"
+  },
   "overallLevel": 整体估算层级数值 (0-1000),
   "levelName": "对应的层级名称（如：勇气、接纳、爱等）",
   "distribution": { "low": 低维占比%, "mid": 中维占比%, "high": 高维占比% },
@@ -116,6 +157,12 @@ const ANALYSIS_PROMPTS = {
 你是一个灵性成长导师。请分析用户的日记，梳理其成长轨迹。
 请返回如下 JSON 格式：
 {
+  "theorist": {
+    "name": "大卫·霍金斯",
+    "avatar": "📈",
+    "period": "1927-2012",
+    "description": "精神导师，意识层级地图创始人"
+  },
   "currentLevel": "当前主要所处的灵性阶段",
   "shifts": [
     {
@@ -134,6 +181,12 @@ const ANALYSIS_PROMPTS = {
 你是一个正念觉察导师。请分析用户的日记，提供当下的觉察提醒。
 请返回如下 JSON 格式：
 {
+  "theorist": {
+    "name": "一行禅师",
+    "avatar": "🍵",
+    "period": "1926-2022",
+    "description": "越南禅宗僧人，将正念带入西方的大师"
+  },
   "intro": "开篇引导语（30字左右）",
   "reminders": [
     {
@@ -151,6 +204,12 @@ const ANALYSIS_PROMPTS = {
 你是一个荣格心理学专家。请分析用户的日记，帮助梳理内在矛盾。
 请返回如下 JSON 格式：
 {
+  "theorist": {
+    "name": "卡尔·荣格",
+    "avatar": "🧠",
+    "period": "1875-1961",
+    "description": "瑞士心理学家，分析心理学创始人"
+  },
   "intro": "关于矛盾作为信使的引入语（40字左右）",
   "conflicts": [
     {

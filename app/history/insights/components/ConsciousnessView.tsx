@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ConsciousnessData } from "@/app/actions/ai"
 import { Progress } from "@/components/ui/progress"
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
+import { TheoristCard } from "./TheoristCard"
 
 const COLORS = ['#EF4444', '#3B82F6', '#F59E0B'] // Low (Red), Mid (Blue), High (Gold)
 
@@ -16,6 +17,9 @@ export function ConsciousnessView({ data }: { data: ConsciousnessData }) {
 
   return (
     <div className="space-y-8">
+      {/* Theorist Card */}
+      {data.theorist && <TheoristCard theorist={data.theorist} />}
+
       {/* Overall Level */}
       <div className="text-center py-8 bg-gradient-to-b from-purple-50 to-white rounded-3xl">
         <h2 className="text-sm font-medium text-purple-600 mb-2 tracking-wider uppercase">当前意识层级估值</h2>

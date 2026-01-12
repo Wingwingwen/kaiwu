@@ -3,50 +3,78 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { RelationshipData } from "@/app/actions/ai"
 import { Heart } from "lucide-react"
+import { TheoristCard } from "./TheoristCard"
 
 export function RelationshipView({ data }: { data: RelationshipData }) {
+  if (!data) return null;
+
   return (
-    <div className="space-y-6">
-      {/* Summary Card */}
-      <Card className="border-none shadow-md bg-white">
+    <div className="space-y-6 max-w-md mx-auto">
+      {/* Theorist Card */}
+      {data.theorist && <TheoristCard theorist={data.theorist} />}
+
+      {/* Analysis Text Card */}
+      {data.analysis && (
+        <Card className="border-none bg-gray-50/80 dark:bg-zinc-800/50 text-gray-900 dark:text-zinc-100 shadow-md">
+          <CardContent className="p-6">
+            <p className="leading-relaxed font-serif text-base text-gray-700 dark:text-zinc-300">
+              {data.analysis}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* People Groups */}
+      {data.peopleGroups?.map((group, gIndex) => (
+        <Card key={gIndex} className="border-none bg-white dark:bg-zinc-900 text-gray-900 dark:text-white shadow-md overflow-hidden">
+          <CardContent className="p-6">
+            {/* Group Header */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center text-lg">
+                {group.emoji}
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">{group.category}</h3>
+                <p className="text-xs text-gray-500 dark:text-zinc-500">
+                  提及 {group.people.reduce((acc, p) => acc + p.count, 0)} 次
+                </p>
+              </div>
+            </div>
+
+            {/* People List in this Group */}
+            <div className="space-y-4">
+              {group.people.map((person, pIndex) => (
+                <div key={pIndex} className="bg-gray-50 dark:bg-zinc-800/50 rounded-xl p-4">
+                   <div className="flex items-center justify-between mb-2">
+                      <div className="font-bold text-gray-800 dark:text-zinc-200">{person.name}</div>
+                      {person.count > 0 && (
+                        <span className="text-xs bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-zinc-300 px-2 py-0.5 rounded-full">
+                          {person.count} 次
+                        </span>
+                      )}
+                   </div>
+                   <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
+                     {person.gratitude}
+                   </p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+
+      {/* Insight Footer */}
+      <Card className="border border-red-100 dark:border-red-900/30 bg-gradient-to-br from-white to-red-50 dark:from-zinc-900 dark:to-zinc-950 shadow-lg">
         <CardContent className="p-6">
-          <p className="text-gray-700 leading-relaxed font-serif text-lg">
-            {data.summary}
+          <div className="flex items-center gap-2 mb-3">
+             <Heart className="w-5 h-5 text-red-500 fill-current" />
+             <h3 className="font-bold text-red-600 dark:text-red-400">爱的洞察</h3>
+          </div>
+          <p className="text-gray-700 dark:text-zinc-300 font-serif leading-relaxed">
+            {data.insight}
           </p>
         </CardContent>
       </Card>
-
-      {/* People Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {data.people.map((person, index) => (
-          <Card key={index} className="border border-gray-100 hover:shadow-md transition-shadow">
-            <CardContent className="p-4 flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-2xl flex-shrink-0">
-                {person.emoji || "👤"}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="font-bold text-gray-900 truncate">{person.name}</h3>
-                  <span className="text-xs text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full">
-                    提及 {person.count} 次
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600 line-clamp-2">
-                  {person.gratitude}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Insight Footer */}
-      <div className="bg-gradient-to-r from-red-50 to-pink-50 rounded-2xl p-6 text-center">
-        <Heart className="w-8 h-8 text-red-400 mx-auto mb-3 fill-current" />
-        <p className="text-gray-800 font-medium font-serif italic">
-          "{data.insight}"
-        </p>
-      </div>
     </div>
   )
 }

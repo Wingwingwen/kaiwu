@@ -9,7 +9,7 @@ export const openai = new OpenAI({
 
 // 模型降级策略 - 按优先级排序
 export const MODEL_PRIORITIES = [
-  "google/gemini-2.5-pro",               // 主要模型: Gemini 2.5 Pro (User preference)
+  "x-ai/grok-4.1-fast",                 // 主要模型: Gemini 2.5 Pro (User preference)
   "google/gemini-2.0-flash-exp:free",    // 备用1: Gemini 2.0 Flash (Free)
   "x-ai/grok-4.1-fast",                  // 备用2: Grok 4.1 Fast
   "openai/gpt-4o-mini:free",             // 备用3: OpenAI免费模型

@@ -2,53 +2,66 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { MindfulnessData } from "@/app/actions/ai"
-import { Sparkles } from "lucide-react"
+import { TheoristCard } from "./TheoristCard"
 
 export function MindfulnessView({ data }: { data: MindfulnessData }) {
+  if (!data) return null;
+
   return (
-    <div className="space-y-6">
-      {/* Intro */}
-      <div className="text-center mb-8">
-        <p className="text-gray-600 font-serif text-lg italic">
-          "{data.intro}"
-        </p>
+    <div className="space-y-6 max-w-md mx-auto md:max-w-4xl">
+      {/* Top Section: Theorist & Intro */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {data.theorist && <TheoristCard theorist={data.theorist} />}
+        
+        <Card className="border-none bg-white dark:bg-zinc-900 text-gray-900 dark:text-white shadow-md h-full">
+          <CardContent className="p-6 flex items-center h-full">
+            <p className="leading-relaxed text-gray-700 dark:text-zinc-300">
+              {data.intro}
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Reminders */}
-      <div className="space-y-4">
+      {/* Reminders List - Grid on Desktop */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {data.reminders.map((reminder, index) => (
-          <Card key={index} className="border-none shadow-sm bg-amber-50/50 overflow-hidden">
-            <div className="h-1 bg-amber-200" />
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="text-3xl bg-white w-12 h-12 flex items-center justify-center rounded-full shadow-sm flex-shrink-0">
-                  {reminder.emoji}
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-900 mb-1 flex items-center gap-2">
-                    {reminder.title}
-                  </h3>
-                  <div className="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-sm font-medium mb-2">
-                    {reminder.coreInsight}
-                  </div>
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    {reminder.detail}
-                  </p>
-                </div>
-              </div>
+          <Card key={index} className="border-none bg-white dark:bg-zinc-900 text-gray-900 dark:text-white shadow-md overflow-hidden flex flex-col">
+            <CardContent className="p-6 flex-1 flex flex-col">
+               {/* Header */}
+               <div className="flex items-center gap-3 mb-4">
+                 <div className="text-2xl">{reminder.emoji}</div>
+                 <h3 className="font-bold text-lg">{reminder.title}</h3>
+               </div>
+
+               {/* Core Insight (Yellow Highlight) */}
+               <div className="flex items-start gap-2 mb-3">
+                 <span className="text-amber-500 mt-0.5">⚡️</span>
+                 <p className="font-bold text-amber-600 dark:text-amber-400">
+                   {reminder.coreInsight}
+                 </p>
+               </div>
+
+               {/* Detail */}
+               <p className="text-gray-700 dark:text-zinc-300 leading-relaxed text-sm mt-auto">
+                 {reminder.detail}
+               </p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Blessing */}
-      <div className="mt-8 relative p-8 text-center overflow-hidden rounded-3xl bg-gradient-to-r from-yellow-50 via-orange-50 to-yellow-50">
-        <Sparkles className="absolute top-4 left-4 w-6 h-6 text-yellow-400 opacity-50" />
-        <Sparkles className="absolute bottom-4 right-4 w-6 h-6 text-yellow-400 opacity-50" />
-        <p className="font-serif font-bold text-xl text-amber-800">
-          {data.blessing}
-        </p>
-      </div>
+      {/* Blessing Footer */}
+      <Card className="border border-amber-100 dark:border-amber-900/30 bg-white dark:bg-zinc-900 shadow-lg">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-2 mb-3">
+             <span className="text-xl">🙏</span>
+             <h3 className="font-bold text-amber-600 dark:text-amber-400">爱的祝福</h3>
+          </div>
+          <p className="text-gray-700 dark:text-zinc-300 leading-relaxed">
+            {data.blessing}
+          </p>
+        </CardContent>
+      </Card>
     </div>
   )
 }
