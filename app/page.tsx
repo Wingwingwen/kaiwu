@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
 import { AnsweringInterface } from "@/components/answering-interface"
 import { getActivePrompts, getTodayEntryCount } from "@/lib/db/queries"
 import { AppNavbar } from "@/components/app-navbar"
 import { Suspense } from "react"
+import { LandingPage } from "@/components/landing-page"
 
 export default async function HomePage() {
   const supabase = await createClient()
@@ -13,7 +13,7 @@ export default async function HomePage() {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    // redirect("/login")
+    return <LandingPage />
   }
 
   // Ensure prompts exist and fetch them
